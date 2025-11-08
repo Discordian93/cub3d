@@ -1,0 +1,72 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   map_read.c                                         :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: yuliano <yuliano@student.42.fr>            +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/11/08 18:15:07 by yuliano           #+#    #+#             */
+/*   Updated: 2025/11/08 19:22:07 by yuliano          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+#include "cub3D.h"
+
+
+
+void	counter_row(t_map *map, char *line, int fd)
+{
+	if (fd < 0)
+	{
+		free(map);
+		ft_error("Error\nAl abrir el archivo");
+	}
+	map -> height = 0;
+	line = get_next_line(fd);
+	while (line != NULL)
+	{
+		if (line[0] != '\n' && line[0] != '\0')
+			map -> height++;
+		free(line);
+		line = get_next_line(fd);
+	}
+	close (fd);
+}
+
+
+void	free_trash(char *line, int fd)
+{
+	line = get_next_line(fd);
+	while (line != NULL)
+	{
+		free(line);
+		line = get_next_line(fd);
+	}
+}
+
+void	read_map(t_map *map)
+{
+	char	*line;
+	int		fd;
+	int		i;
+
+	fd = open(map->name, O_RDONLY);
+	line = NULL;
+	counter_row(map, line, fd);
+	fd = open(map->name, O_RDONLY);
+	if (fd < 0)
+		ft_error("Error\nAl reabrir el archivo\n");
+	map->map = (char **)malloc(sizeof(char *) * (map->height + 1));
+	if (!map->map)
+		ft_error("Error\nFallo de asignación de memoria\n");
+	i = 0;
+	while (i < map->height)
+	{
+		line = get_next_line(fd);
+		map->map[i] = line;
+		i++;
+	}
+	free_trash(line, fd);
+	map->map[i] = NULL;
+	close(fd);
+}

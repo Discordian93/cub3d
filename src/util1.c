@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   util.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ypacileo <ypacileo@student.42.fr>          +#+  +:+       +#+        */
+/*   By: yuliano <yuliano@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/01 17:11:34 by ypacileo          #+#    #+#             */
-/*   Updated: 2025/11/01 17:13:51 by ypacileo         ###   ########.fr       */
+/*   Updated: 2025/11/08 19:33:01 by yuliano          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@
 /*  Objetivo: Escribir un color **RGB** (0xRRGGBB) en el píxel (x,y) del      */
 /*            framebuffer, siempre que esté dentro de la ventana.             */
 /* -------------------------------------------------------------------------- */
-static void put_px(t_img *img, int x, int y, int rgb)
+void put_px(t_img *img, int x, int y, int rgb)
 {
     char *dst;                                 // Puntero destino dentro del buffer
 
@@ -34,7 +34,7 @@ static void put_px(t_img *img, int x, int y, int rgb)
 /*  pack_rgb                                                                  */
 /*  Objetivo: Empaquetar tres componentes R,G,B (0..255) en un entero 0xRRGGBB.*/
 /* -------------------------------------------------------------------------- */
-static int pack_rgb(int r, int g, int b)
+int pack_rgb(int r, int g, int b)
 {
     if (r < 0) r = 0; if (r > 255) r = 255;   // Asegura rango válido para R
     if (g < 0) g = 0; if (g > 255) g = 255;   // Asegura rango válido para G
@@ -48,7 +48,7 @@ static int pack_rgb(int r, int g, int b)
 /*  Objetivo: Aplicar un factor 'k' (0..1) al color RGB 0xRRGGBB, afectando   */
 /*            solo los canales R,G,B (sin alfa). Devuelve 0xRRGGBB.           */
 /* -------------------------------------------------------------------------- */
-static int mul_color_rgb(int color, double k)
+int mul_color_rgb(int color, double k)
 {
     int r, g, b;                               // Componentes extraídos
 
@@ -74,9 +74,31 @@ static int mul_color_rgb(int color, double k)
 /*            - Cerca  ⇒ k≈1 (más claro)                                       */
 /*            - Lejos  ⇒ k≈0.2 (más oscuro)                                    */
 /* -------------------------------------------------------------------------- */
-static double shade_from_dist(double corr)
+double shade_from_dist(double corr)
 {
     double k = 1.0 / (1.0 + 0.15 * corr * corr); // Curva suave decreciente con la distancia
     if (k < 0.20) k = 0.20;                      // Clamp mínimo (evita negro total)
     return (k);
 }
+
+/*
+** grados_a_radianes
+** Objetivo: Convertir grados a radianes.
+*/
+double	degrees_to_radians(double degrees)
+{
+    return degrees * (M_PI / 180.0);
+}
+
+/*
+** calcular_max_distancia
+** Objetivo: Calcular la distancia máxima que puede recorrer un rayo
+** en el mapa (diagonal × 1.5 como margen de seguridad).
+*/
+double calc_max_dist(int width, int height)
+{
+    double diagonal = sqrt(width * width + height * height);
+    return diagonal * 1.5;
+}
+// Uso:
+//double limite = calcular_limite_seguridad(5, 5);
