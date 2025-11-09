@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   util.c                                             :+:      :+:    :+:   */
+/*   util1.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: yuliano <yuliano@student.42.fr>            +#+  +:+       +#+        */
+/*   By: ypacileo <ypacileo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/01 17:11:34 by ypacileo          #+#    #+#             */
-/*   Updated: 2025/11/08 19:33:01 by yuliano          ###   ########.fr       */
+/*   Updated: 2025/11/09 12:02:20 by ypacileo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,14 +81,6 @@ double shade_from_dist(double corr)
     return (k);
 }
 
-/*
-** grados_a_radianes
-** Objetivo: Convertir grados a radianes.
-*/
-double	degrees_to_radians(double degrees)
-{
-    return degrees * (M_PI / 180.0);
-}
 
 /*
 ** calcular_max_distancia

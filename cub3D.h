@@ -6,7 +6,7 @@
 /*   By: ypacileo <ypacileo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/01 17:03:53 by ypacileo          #+#    #+#             */
-/*   Updated: 2025/11/09 11:42:01 by ypacileo         ###   ########.fr       */
+/*   Updated: 2025/11/09 15:23:46 by ypacileo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,17 +23,21 @@
 #include "libft.h"
 
 
-#define WIDTH   800              // Ancho de la ventana en píxeles
-#define HEIGHT  600              // Alto de la ventana en píxeles
-#define left_arrow 65363
-#define right_arrow 65361
-#define KEY_ESC 65307
+# define WIDTH   1200             // Ancho de la ventana en píxeles
+# define HEIGHT  800           // Alto de la ventana en píxeles
+# define KEY_LEFT   65363
+# define KEY_RIGHT  65361
+# define KEY_ESC 65307
+# define KEY_W 119
+# define KEY_S 115
+# define KEY_A 97
+# define KEY_D 100
 
 
 /* ------------------------ Parámetros de proyección ------------------------ */
 #define FOV_RAD  (60.0 * (M_PI / 180.0)) // Campo de visión horizontal: 60° en radianes
 #define TILE_SZ  1.0             // Altura/escala de una pared en el mundo (1 unidad por celda)
-#define STEP     0.02            // Paso de avance incremental para el rayo
+#define STEP     0.02           // Paso de avance incremental para el rayo
 #define EPS      1e-9            // Épsilon para evitar divisiones por cero
 
 
@@ -60,9 +64,13 @@ typedef struct s_img
 
 typedef struct s_player 
 {
-    double x;            // Posición X en el mundo (columna), en unidades de celda
-    double y;            // Posición Y en el mundo (fila), en unidades de celda
-    double dir;          // Dirección de la cámara en radianes (0 = Este)
+    double  x;            // Posición X en el mundo (columna), en unidades de celda
+    double  y;            // Posición Y en el mundo (fila), en unidades de celda
+    double  dir;          // Dirección de la cámara en radianes (0 = Este)
+    double  rel;                                  // Ángulo relativo al frente de la cámara
+    double  dist;                                 // Distancia sin corregir
+    double  corr;                                 // Distancia corregida (anti fish-eye)
+    double  wall_h;
 }   t_player;
 
 typedef struct s_map
@@ -78,7 +86,7 @@ typedef struct s_contex
     void     *mlx;       // Contexto MLX
     void     *win;       // Ventana MLX
     t_img     img;     // Framebuffer donde dibujamos
-    t_player  pl;        // Estado del jugador/cámara
+    t_player  *pl;        // Estado del jugador/cámara
     double    proj_dist; // Distancia al plano de proyección: (WIDTH/2)/tan(FOV/2)
     t_map	*map_g;
 }   t_contex;
@@ -101,5 +109,6 @@ int		loop_hook(t_contex *app);
 int     handle_keypress(int keycode, t_contex *contex);
 void	ft_error(const char *msg);
 void	map_validation(t_map **map, int argc, char **argv);
+void    init_pos_pl(t_player *pl, t_map *map, int y, int x);
 #endif
 

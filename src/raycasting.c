@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   raycasting.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: yuliano <yuliano@student.42.fr>            +#+  +:+       +#+        */
+/*   By: ypacileo <ypacileo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/08 19:24:37 by yuliano           #+#    #+#             */
-/*   Updated: 2025/11/08 22:06:01 by yuliano          ###   ########.fr       */
+/*   Updated: 2025/11/09 15:24:32 by ypacileo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,27 +78,27 @@ void render_frame(t_contex *app)
 {
     int     x;                                // Columna actual
     double  ray_ang;                              // Ángulo del rayo para x
-    double  rel;                                  // Ángulo relativo al frente de la cámara
-    double  dist;                                 // Distancia sin corregir
-    double  corr;                                 // Distancia corregida (anti fish-eye)
-    double  wall_h;                               // Altura proyectada en píxeles
+    //double  rel;                                  // Ángulo relativo al frente de la cámara
+    //double  dist;                                 // Distancia sin corregir
+    //double  corr;                                 // Distancia corregida (anti fish-eye)
+    //double  wall_h;                               // Altura proyectada en píxeles
     double  shade;                                // Factor de sombreado [0.2..1]
 
     x = 0;
     while (x < WIDTH)
     {
         // Pinhole: ángulo relativo = atan((x - WIDTH/2) / proj_dist)
-        ray_ang = app->pl.dir + atan(((double)x - (WIDTH / 2.0)) / app->proj_dist);
+        ray_ang = app->pl->dir + atan(((double)x - (WIDTH / 2.0)) / app->proj_dist);
 
-        dist = cast_ray(ray_ang, &app->pl, app->map_g);       // Distancia a primer muro
+        app->pl->dist = cast_ray(ray_ang, app->pl, app->map_g);       // Distancia a primer muro
 
-        rel  = ray_ang - app->pl.dir;             // Diferencia angular respecto al frente
-        corr = dist * cos(rel);                    // Distancia corregida (proyección ortogonal)
+        app->pl->rel  = ray_ang - app->pl->dir;             // Diferencia angular respecto al frente
+        app->pl->corr = app->pl->dist * cos(app->pl->rel);                    // Distancia corregida (proyección ortogonal)
 
-        wall_h = (TILE_SZ * app->proj_dist) / (corr + EPS); // Altura proyectada estable
+        app->pl->wall_h = (TILE_SZ * app->proj_dist) / (app->pl->corr + EPS); // Altura proyectada estable
 
-        shade = shade_from_dist(corr);             // Luz decreciente con distancia
-        draw_column(app, x, wall_h, mul_color_rgb(WALL_COL, shade)); // Dibuja columna
+        shade = shade_from_dist(app->pl->corr);             // Luz decreciente con distancia
+        draw_column(app, x, app->pl->wall_h, mul_color_rgb(WALL_COL, shade)); // Dibuja columna
         x++;                                       // Siguiente columna
     }
 }

@@ -6,7 +6,7 @@
 /*   By: ypacileo <ypacileo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/04 21:20:22 by yuliano           #+#    #+#             */
-/*   Updated: 2025/11/09 11:42:22 by ypacileo         ###   ########.fr       */
+/*   Updated: 2025/11/09 15:09:13 by ypacileo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,9 +18,15 @@
 
 void init_contex(t_contex **contex)
 {
+	t_player *pl;
+	
 	*contex = malloc(sizeof(t_contex));
 	if(!*contex)
 		ft_error("ERROR\n");
+	pl = malloc(sizeof(t_player));
+	if (!pl)
+		ft_error("ERROR\n");
+	(*contex)->pl = pl;
 }
 
 int main(int argc, char **argv)
@@ -47,7 +53,7 @@ int main(int argc, char **argv)
                                        &contex->img.line_len,
                                        &contex->img.endian);
 
-    find_player(&contex->pl, contex->map_g);                           // Localiza 'p' en el mapa y centra jugador
+    find_player(contex->pl, contex->map_g);                           // Localiza 'p' en el mapa y centra jugador
     contex->proj_dist = (WIDTH / 2.0) / tan(FOV_RAD / 2.0); // Distancia al plano de proyección
 
     mlx_loop_hook(contex->mlx, &loop_hook, contex);      // Hook de render por frame
