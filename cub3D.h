@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   cub3D.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: yuliano <yuliano@student.42.fr>            +#+  +:+       +#+        */
+/*   By: ypacileo <ypacileo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/01 17:03:53 by ypacileo          #+#    #+#             */
-/*   Updated: 2025/11/08 22:41:04 by yuliano          ###   ########.fr       */
+/*   Updated: 2025/11/09 11:42:01 by ypacileo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -98,6 +98,8 @@ double cast_ray(double ax, const t_player *pl, t_map *map);
 void	draw_column(t_contex *contex, int x, double wall_h, int wall_rgb);
 void	render_frame(t_contex *app);
 int		loop_hook(t_contex *app);
-int handle_keypress(int keycode, t_contex *contex);
+int     handle_keypress(int keycode, t_contex *contex);
+void	ft_error(const char *msg);
+void	map_validation(t_map **map, int argc, char **argv);
 #endif
 

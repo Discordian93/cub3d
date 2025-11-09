@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: yuliano <yuliano@student.42.fr>            +#+  +:+       +#+        */
+/*   By: ypacileo <ypacileo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/04 21:20:22 by yuliano           #+#    #+#             */
-/*   Updated: 2025/11/08 22:41:25 by yuliano          ###   ########.fr       */
+/*   Updated: 2025/11/09 11:42:22 by ypacileo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,24 +14,7 @@
 #include "libft.h"
 #include "cub3D.h"
 
-void	ft_error(const char *msg)
-{
-	perror(msg);
-	exit(EXIT_FAILURE);
-}
 
-
-void	map_validation(t_map **map, int argc, char **argv)
-{
-	if (argc != 2)
-		ft_error("Error\nUso: ./so_long <mapa.ber>\n");
-	*map = (t_map *)malloc(sizeof(t_map));
-	if (!(*map))
-		ft_error("Error\nFallo de asignación de memoria para el mapa\n");
-	(*map)->name = argv[1];
-	read_map(*map);
-	
-}
 
 void init_contex(t_contex **contex)
 {
