@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ypacileo <ypacileo@student.42.fr>          +#+  +:+       +#+        */
+/*   By: yuliano <yuliano@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/04 21:20:22 by yuliano           #+#    #+#             */
-/*   Updated: 2025/11/09 15:09:13 by ypacileo         ###   ########.fr       */
+/*   Updated: 2025/11/13 07:39:02 by yuliano          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,6 +33,7 @@ int main(int argc, char **argv)
 {
 	t_contex *contex;
 	int i;
+	
 	
 	init_contex(&contex);
 	map_validation(&contex->map_g, argc, argv);

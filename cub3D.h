@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   cub3D.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ypacileo <ypacileo@student.42.fr>          +#+  +:+       +#+        */
+/*   By: yuliano <yuliano@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/01 17:03:53 by ypacileo          #+#    #+#             */
-/*   Updated: 2025/11/09 15:23:46 by ypacileo         ###   ########.fr       */
+/*   Updated: 2025/11/13 07:21:33 by yuliano          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,8 +23,8 @@
 #include "libft.h"
 
 
-# define WIDTH   1200             // Ancho de la ventana en píxeles
-# define HEIGHT  800           // Alto de la ventana en píxeles
+# define WIDTH   800             // Ancho de la ventana en píxeles
+# define HEIGHT  600           // Alto de la ventana en píxeles
 # define KEY_LEFT   65363
 # define KEY_RIGHT  65361
 # define KEY_ESC 65307
@@ -62,6 +62,15 @@ typedef struct s_img
     int     endian;      // Endianness del buffer
 }   t_img;
 
+
+typedef struct s_texture
+{
+    void    *img;
+    int     height;
+    int     weidht;
+}   t_texture;
+
+
 typedef struct s_player 
 {
     double  x;            // Posición X en el mundo (columna), en unidades de celda
@@ -89,6 +98,7 @@ typedef struct s_contex
     t_player  *pl;        // Estado del jugador/cámara
     double    proj_dist; // Distancia al plano de proyección: (WIDTH/2)/tan(FOV/2)
     t_map	*map_g;
+    t_texture *text;
 }   t_contex;
 
 void	counter_row(t_map *map, char *line, int fd);

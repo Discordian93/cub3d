@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   raycasting.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ypacileo <ypacileo@student.42.fr>          +#+  +:+       +#+        */
+/*   By: yuliano <yuliano@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/08 19:24:37 by yuliano           #+#    #+#             */
-/*   Updated: 2025/11/09 15:24:32 by ypacileo         ###   ########.fr       */
+/*   Updated: 2025/11/13 07:41:25 by yuliano          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,6 +46,7 @@ double cast_ray(double ax, const t_player *pl, t_map *map)
 /* -------------------------------------------------------------------------- */
 void	draw_column(t_contex *contex, int x, double wall_h, int wall_rgb)
 {
+    int h,w;
     int y_top;                                   // Y inicial de pared
     int y;                                       // Iterador vertical
     int y_bot;                                   // Y final de pared
@@ -60,7 +61,10 @@ void	draw_column(t_contex *contex, int x, double wall_h, int wall_rgb)
     while (y < y_top)
         put_px(&contex->img, x, y++, CEIL_COL);   // Techo (cielo)
     while (y < y_bot)
+    {
         put_px(&contex->img, x, y++, wall_rgb);   // Pared (ya sombreada)
+    }
+       
     while (y < HEIGHT)
         put_px(&contex->img, x, y++, FLOOR_COL);  // Suelo
 }
@@ -99,7 +103,7 @@ void render_frame(t_contex *app)
 
         shade = shade_from_dist(app->pl->corr);             // Luz decreciente con distancia
         draw_column(app, x, app->pl->wall_h, mul_color_rgb(WALL_COL, shade)); // Dibuja columna
-        x++;                                       // Siguiente columna
+        x ++;                                    // Siguiente columna
     }
 }
 

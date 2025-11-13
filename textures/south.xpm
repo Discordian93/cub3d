@@ -1,0 +1,23 @@
+/* XPM */
+static char *south[] = {
+"16 16 3 1",
+"d c #1B3B6F",   /* vidrio oscuro */
+"l c #9FD3FF",   /* vidrio claro */
+"f c #E6F4FF",   /* reflejo */
+"fdflddlfdflfddl",
+"dlfddlfdlfddlfd",
+"fdflddlfdflfddl",
+"dlfddlfdlfddlfd",
+"fdflddlfdflfddl",
+"dlfddlfdlfddlfd",
+"fdflddlfdflfddl",
+"dlfddlfdlfddlfd",
+"fdflddlfdflfddl",
+"dlfddlfdlfddlfd",
+"fdflddlfdflfddl",
+"dlfddlfdlfddlfd",
+"fdflddlfdflfddl",
+"dlfddlfdlfddlfd",
+"fdflddlfdflfddl",
+"dlfddlfdlfddlfd"
+};
