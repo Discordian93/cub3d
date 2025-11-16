@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   cub3D.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: yuliano <yuliano@student.42.fr>            +#+  +:+       +#+        */
+/*   By: ypacileo <ypacileo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/01 17:03:53 by ypacileo          #+#    #+#             */
-/*   Updated: 2025/11/15 22:16:48 by yuliano          ###   ########.fr       */
+/*   Updated: 2025/11/16 11:58:52 by ypacileo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,8 +23,8 @@
 #include "libft.h"
 
 
-# define WIDTH   800             // Ancho de la ventana en píxeles
-# define HEIGHT  600           // Alto de la ventana en píxeles
+# define WIDTH   1200           // Ancho de la ventana en píxeles
+# define HEIGHT  800          // Alto de la ventana en píxeles
 # define KEY_LEFT   65363
 # define KEY_RIGHT  65361
 # define KEY_ESC 65307
@@ -111,13 +111,14 @@ typedef struct s_map
 
 typedef struct s_contex 
 {
-    void     *mlx;       // Contexto MLX
-    void     *win;       // Ventana MLX
-    t_img     img;     // Framebuffer donde dibujamos
-    t_player  *pl;        // Estado del jugador/cámara
-    double    proj_dist; // Distancia al plano de proyección: (WIDTH/2)/tan(FOV/2)
-    t_map	*map_g;
-    t_img	*text;
+    void        *mlx;       // Contexto MLX
+    void        *win;       // Ventana MLX
+    t_img       *img;     // Framebuffer donde dibujamos
+    t_img       *text;
+    t_player    *pl;        // Estado del jugador/cámara
+    double      proj_dist; // Distancia al plano de proyección: (WIDTH/2)/tan(FOV/2)
+    t_map       *map_g;
+    
 }   t_contex;
 
 void	counter_row(t_map *map, char *line, int fd);

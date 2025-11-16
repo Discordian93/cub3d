@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: yuliano <yuliano@student.42.fr>            +#+  +:+       +#+        */
+/*   By: ypacileo <ypacileo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/04 21:20:22 by yuliano           #+#    #+#             */
-/*   Updated: 2025/11/15 22:29:41 by yuliano          ###   ########.fr       */
+/*   Updated: 2025/11/16 12:12:22 by ypacileo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,24 +15,56 @@
 #include "cub3D.h"
 
 
+void	ft_free_contex(t_contex **context)
+{
+	if((*context)->pl)
+		free((*context)->pl);
+	if ((*context)->text)
+		free((*context)->text);
+	if ((*context)->img)
+		free((*context)->img);
+	if(*context)
+		free(context);
+}
+
 
 void init_contex(t_contex **contex)
 {
-	t_player *pl;
-	t_img	*text;
+	t_player	*pl;
+	t_img		*text;
+	t_img		*img;
 	
 	*contex = malloc(sizeof(t_contex));
 	if(!*contex)
 		ft_error("ERROR\n");
 	pl = malloc(sizeof(t_player));
 	if (!pl)
+	{
+		ft_free_contex(contex);
 		ft_error("ERROR\n");
+	}
 	(*contex)->pl = pl;
 	text =malloc(sizeof(t_img));
 	if (!text)
+	{
+		ft_free_contex(contex);
 		ft_error("ERROR\n");
-	(*contex)->text;
+	}
+	(*contex)->text = text;
+	img = malloc(sizeof(t_img));
+	if (!img)
+	{
+		ft_free_contex(contex);
+		ft_error("ERROR\n");
+	}
+	(*contex)->img = img;
+	(*contex)->mlx = NULL;
+	(*contex)->map_g = NULL;
+	(*contex)->win = NULL;
+	(*contex)->proj_dist = 0.0;
 }
+
+
 
 int main(int argc, char **argv)
 {
@@ -46,21 +78,21 @@ int main(int argc, char **argv)
 	
 	contex->mlx = mlx_init();                           // Inicializa MLX
     if (!contex->mlx)
-        return (1); 
+        return (1); // pendiente liberar memoria
 	
-    contex->win = mlx_new_window(contex->mlx, WIDTH, HEIGHT,
-                             "Ray Casting - Cub3D (RGB)"); // Crea ventana
+    contex->win = mlx_new_window(contex->mlx, WIDTH, HEIGHT, \
+    							"Cub3D"); // Crea ventana
     if (!contex->win)
-        return (1);                                 // Error al crear ventana
+        return (1);                                 // Error al crear ventana, pendiente liberar memoria
 
-    contex->img.ptr = mlx_new_image(contex->mlx, WIDTH, HEIGHT); // Crea imagen
-    contex->img.addr = mlx_get_data_addr(contex->img.ptr,       // Obtiene buffer crudo
-                                       &contex->img.bpp,
-                                       &contex->img.line_len,
-                                       &contex->img.endian);
+    contex->img->ptr = mlx_new_image(contex->mlx, WIDTH, HEIGHT); // Crea imagen
+    contex->img->addr = mlx_get_data_addr(contex->img->ptr,   // Obtiene buffer crudo
+                                       &contex->img->bpp,
+                                       &contex->img->line_len,
+                                       &contex->img->endian);
 
 
-	contex->text = mlx_xpm_file_to_image(contex->mlx, "textures/west.xpm",
+	contex->text->ptr = mlx_xpm_file_to_image(contex->mlx, "textures/wall.xpm",
                                              &contex->text->widht,
                                              &contex->text->height);
 	contex->text->addr = mlx_get_data_addr(contex->text->ptr,
