@@ -6,7 +6,7 @@
 /*   By: ypacileo <ypacileo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/01 17:11:34 by ypacileo          #+#    #+#             */
-/*   Updated: 2025/11/09 12:02:20 by ypacileo         ###   ########.fr       */
+/*   Updated: 2025/11/16 15:54:27 by ypacileo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,19 +67,7 @@ int mul_color_rgb(int color, double k)
     return pack_rgb(r, g, b);                  // Reempaqueta y devuelve 0xRRGGBB
 }
 
-/* -------------------------------------------------------------------------- */
-/*  shade_from_dist                                                           */
-/*  Objetivo: Calcular factor de sombreado (0.2..1.0) a partir de la          */
-/*            distancia **corregida** (anti fish-eye).                         */
-/*            - Cerca  ⇒ k≈1 (más claro)                                       */
-/*            - Lejos  ⇒ k≈0.2 (más oscuro)                                    */
-/* -------------------------------------------------------------------------- */
-double shade_from_dist(double corr)
-{
-    double k = 1.0 / (1.0 + 0.15 * corr * corr); // Curva suave decreciente con la distancia
-    if (k < 0.20) k = 0.20;                      // Clamp mínimo (evita negro total)
-    return (k);
-}
+
 
 
 /*

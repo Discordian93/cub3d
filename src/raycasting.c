@@ -6,7 +6,7 @@
 /*   By: ypacileo <ypacileo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/08 19:24:37 by yuliano           #+#    #+#             */
-/*   Updated: 2025/11/16 11:57:29 by ypacileo         ###   ########.fr       */
+/*   Updated: 2025/11/16 15:53:26 by ypacileo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -175,8 +175,7 @@ void    render_frame(t_contex *app)
     double  cell_x;       // Parte fraccionaria de la coordenada X del impacto
     double  cell_y;       // Parte fraccionaria de la coordenada Y del impacto
     double  wall_x;       // Coordenada relativa en la pared (0..1)
-    double  tex_x_rel;    // Coordenada relativa horizontal de la textura (0..1)
-
+  
     x = 0;                // Empezamos por la columna 0 de la pantalla
 
     // Bucle principal: recorre TODA la ventana de izquierda a derecha
@@ -282,8 +281,7 @@ void    render_frame(t_contex *app)
         wall_x ya está en el rango [0..1).
         Es la posición horizontal relativa dentro de la textura.
         */
-        tex_x_rel = wall_x;
-        app->pl->tex_rel_x = tex_x_rel;
+        app->pl->tex_rel_x = wall_x;
 
         /*
         --------------------------------------------------------------------------

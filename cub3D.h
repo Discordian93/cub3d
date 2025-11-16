@@ -6,7 +6,7 @@
 /*   By: ypacileo <ypacileo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/01 17:03:53 by ypacileo          #+#    #+#             */
-/*   Updated: 2025/11/16 11:58:52 by ypacileo         ###   ########.fr       */
+/*   Updated: 2025/11/16 15:57:52 by ypacileo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,28 +63,6 @@ typedef struct s_img
 	int     height;
     int     widht;
 }   t_img;
-
-
-/*
-typedef struct s_texture
-{
-    void    *img;
-    int     height;
-    int     weidht;
-}   t_texture;
-*/
-/*
-typedef struct s_player 
-{
-    double  x;            // Posición X en el mundo (columna), en unidades de celda
-    double  y;            // Posición Y en el mundo (fila), en unidades de celda
-    double  dir;          // Dirección de la cámara en radianes (0 = Este)
-    double  rel;                                  // Ángulo relativo al frente de la cámara
-    double  dist;                                 // Distancia sin corregir
-    double  corr;                                 // Distancia corregida (anti fish-eye)
-    double  wall_h;
-}   t_player;
-*/
 
 typedef struct s_player
 {
