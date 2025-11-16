@@ -6,7 +6,7 @@
 /*   By: ypacileo <ypacileo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/15 13:14:33 by yuliano           #+#    #+#             */
-/*   Updated: 2025/11/16 16:52:52 by ypacileo         ###   ########.fr       */
+/*   Updated: 2025/11/16 19:30:18 by ypacileo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,3 +67,23 @@ int apply_shade(int color, double shade)
     return ((r << 16) | (g << 8) | b);
 }
 
+/*
+t_img *select_texture(t_contex *c, double dirx, double diry)
+{
+    if (c->pl->side == 0)
+    {
+        if (dirx > 0)
+            return (c->tex_we);
+        else
+            return (c->tex_ea);
+    }
+    else
+    {
+        if (diry > 0)
+            return (c->tex_no);
+        else
+            return (c->tex_so);
+    }
+}
+
+*/

@@ -6,7 +6,7 @@
 /*   By: ypacileo <ypacileo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/08 19:24:37 by yuliano           #+#    #+#             */
-/*   Updated: 2025/11/16 17:42:14 by ypacileo         ###   ########.fr       */
+/*   Updated: 2025/11/16 19:29:53 by ypacileo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,8 +67,8 @@ double  cast_ray(double ax, t_player *pl, t_map *map)
         /* Si la celda actual es un muro → el rayo impactó */
         if (map_is_wall(map, mx, my))
         {
-            /* Guardamos en el jugador el punto exacto donde impactó el rayo */
-            pl->hit_x = prev_rx;  // CORREGIDO: usamos la posición ANTES del muro
+            /* usamos la posición ANTES del muro*/
+            pl->hit_x = prev_rx;
             pl->hit_y = prev_ry;
 
             dist -= STEP;
@@ -76,22 +76,20 @@ double  cast_ray(double ax, t_player *pl, t_map *map)
             /*
             Determinamos si golpeamos un muro vertical u horizontal:
 
-            - Si cambió solo la X (mx ≠ pmx) → cruzamos una pared vertical.
-              Significa que el rayo entró al muro por su lado Este/Oeste.
+            - Si cambió solo la X (mx ≠ pmx) → Este/Oeste.
               → side = 0
 
-            - Si cambió solo la Y (my ≠ pmy) → cruzamos una pared horizontal.
-              Significa que el rayo entró al muro por su lado Norte/Sur.
+            - Si cambió solo la Y (my ≠ pmy) → lado Norte/Sur.
               → side = 1
 
             Nota:
             Esto funciona porque el rayo avanza paso a paso,
-            y podemos comparar la celda justo antes del impacto con la celda actual.
+           		y podemos comparar la celda justo antes del impacto con la celda actual.
             */
             if (mx != pmx && my == pmy)
-                pl->side = 0;   // Muro vertical
+                pl->side = 0;   // Este/Oeste.
             else if (my != pmy && mx == pmx)
-                pl->side = 1;   // Muro horizontal
+                pl->side = 1;   // Norte/Sur.
             else
                 pl->side = 0;   // Caso raro (diagonal mínima) → tratamos como vertical
 
@@ -276,9 +274,9 @@ void    render_frame(t_contex *contex)
             → usamos cell_x
         */
         if (contex->pl->side == 0)
-            wall_x = cell_y;  // Muro vertical
+            wall_x = cell_y;  // Muro vertical Este/oeste
         else
-            wall_x = cell_x;  // Muro horizontal
+            wall_x = cell_x;  // Muro horizontal Norte/sur
 
         /*
         wall_x ya está en el rango [0..1).
