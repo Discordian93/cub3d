@@ -19,9 +19,12 @@
 /* -------------------------------------------------------------------------- */
 int map_is_wall(t_map *map, int mx, int my)
 {
-    if (mx < 0 || mx >= map->width || my < 0 || my >= map->width)
-        return (1);                             // Fuera de límites ⇒ muro implícito
-    return (map->map[my][mx] == '1');              // '1' representa muro
+    /* Si está fuera de los límites del mapa, consideramos que es un muro
+       implícito para cerrar el mundo. Utilizamos map->height para la
+       dimensión vertical y map->width para la horizontal. */
+    if (mx < 0 || mx >= map->width || my < 0 || my >= map->height)
+        return (1);
+    return (map->map[my][mx] == '1');
 }
 
 /* -------------------------------------------------------------------------- */
