@@ -6,7 +6,7 @@
 /*   By: ypacileo <ypacileo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/01 17:03:53 by ypacileo          #+#    #+#             */
-/*   Updated: 2025/11/16 16:55:02 by ypacileo         ###   ########.fr       */
+/*   Updated: 2025/11/16 17:30:59 by ypacileo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,8 +23,8 @@
 #include "libft.h"
 
 
-# define WIDTH   1200           // Ancho de la ventana en píxeles
-# define HEIGHT  800          // Alto de la ventana en píxeles
+# define WIDTH   1800           // Ancho de la ventana en píxeles
+# define HEIGHT  1200        // Alto de la ventana en píxeles
 # define KEY_LEFT   65363
 # define KEY_RIGHT  65361
 # define KEY_ESC 65307
@@ -61,7 +61,7 @@ typedef struct s_img
     int     line_len;    // Bytes por fila (stride)
     int     endian;      // Endianness del buffer
 	int     height;
-    int     widht;
+    int     width;
 }   t_img;
 
 typedef struct s_player

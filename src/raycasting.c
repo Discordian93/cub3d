@@ -6,7 +6,7 @@
 /*   By: ypacileo <ypacileo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/08 19:24:37 by yuliano           #+#    #+#             */
-/*   Updated: 2025/11/16 17:23:46 by ypacileo         ###   ########.fr       */
+/*   Updated: 2025/11/16 17:42:14 by ypacileo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,6 +42,10 @@ double  cast_ray(double ax, t_player *pl, t_map *map)
 
     dist = 0.0;       // distancia inicial recorrida = 0
 
+    /* Inicializamos las celdas previas */
+    pmx = (int)floor(rx);
+    pmy = (int)floor(ry);
+
     /* Avanza el rayo de forma incremental en pasos pequeños */
     while (dist < 64.0)     // 64 es un límite de seguridad (máxima distancia permitida)
     {
@@ -63,13 +67,11 @@ double  cast_ray(double ax, t_player *pl, t_map *map)
         /* Si la celda actual es un muro → el rayo impactó */
         if (map_is_wall(map, mx, my))
         {
-            /* Calculamos la celda anterior */
-            pmx = (int)floor(prev_rx);
-            pmy = (int)floor(prev_ry);
-
             /* Guardamos en el jugador el punto exacto donde impactó el rayo */
-            pl->hit_x = rx;
-            pl->hit_y = ry;
+            pl->hit_x = prev_rx;  // CORREGIDO: usamos la posición ANTES del muro
+            pl->hit_y = prev_ry;
+
+            dist -= STEP;
 
             /*
             Determinamos si golpeamos un muro vertical u horizontal:
@@ -95,6 +97,10 @@ double  cast_ray(double ax, t_player *pl, t_map *map)
 
             break ;   // Detenemos el avance, ya chocamos con algo
         }
+
+        /* Actualizamos las celdas previas para la siguiente iteración */
+        pmx = mx;
+        pmy = my;
     }
 
     /* Devolvemos la distancia recorrida por el rayo */
@@ -132,11 +138,11 @@ void    draw_column(t_contex *contex, int x)
     y = 0;
     while (y < y_top)
         put_px(contex->img, x, y++, CEIL_COL);
-    tex_x = (int)(contex->pl->tex_x_rel * contex->text->widht);
+    tex_x = (int)(contex->pl->tex_x_rel * contex->text->width);
     if (tex_x < 0)
         tex_x = 0;
-    if (tex_x >= contex->text->widht)
-        tex_x = contex->text->widht - 1;
+    if (tex_x >= contex->text->width)
+        tex_x = contex->text->width - 1;
     while (y < y_bot)
     {
         rel = (double)(y - y_top) / wall_h;
@@ -189,7 +195,7 @@ void    render_frame(t_contex *contex)
         atan(...)
             → obtiene ese ángulo relativo en radianes.
 
-        app->pl->dir
+        contex->pl->dir
             → dirección absoluta del jugador en el mundo.
 
         Suma total:
@@ -203,7 +209,7 @@ void    render_frame(t_contex *contex)
         LANZAMOS EL RAYO
         --------------------------------------------------------------------------
         cast_ray devuelve la distancia cruda del rayo.
-        PERO también modifica dentro de app->pl:
+        PERO también modifica dentro de contex->pl:
             - hit_x, hit_y  → punto exacto donde colisiona con un muro
             - side          → si golpeó un muro vertical u horizontal
         */
@@ -310,5 +316,3 @@ int loop_hook(t_contex *app)
                             app->win, app->img->ptr, 0, 0);
     return (0);                                     // Continuar el loop
 }
-
-

@@ -6,7 +6,7 @@
 /*   By: ypacileo <ypacileo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/04 21:20:22 by yuliano           #+#    #+#             */
-/*   Updated: 2025/11/16 16:57:49 by ypacileo         ###   ########.fr       */
+/*   Updated: 2025/11/16 17:45:22 by ypacileo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -92,8 +92,8 @@ int main(int argc, char **argv)
                                        &contex->img->endian);
 
 
-	contex->text->ptr = mlx_xpm_file_to_image(contex->mlx, "textures/Wolfenstein-Walls.xpm",
-                                             &contex->text->widht,
+	contex->text->ptr = mlx_xpm_file_to_image(contex->mlx, "textures/blue_wall.xpm",
+                                             &contex->text->width,
                                              &contex->text->height);
 	contex->text->addr = mlx_get_data_addr(contex->text->ptr,
                  &contex->text->bpp,
