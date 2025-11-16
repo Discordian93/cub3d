@@ -6,7 +6,7 @@
 /*   By: yuliano <yuliano@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/01 17:03:53 by ypacileo          #+#    #+#             */
-/*   Updated: 2025/11/13 07:21:33 by yuliano          ###   ########.fr       */
+/*   Updated: 2025/11/15 22:16:48 by yuliano          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,17 +60,20 @@ typedef struct s_img
     int     bpp;         // Bits por píxel (normalmente 32 en MLX Linux)
     int     line_len;    // Bytes por fila (stride)
     int     endian;      // Endianness del buffer
+	int     height;
+    int     widht;
 }   t_img;
 
 
+/*
 typedef struct s_texture
 {
     void    *img;
     int     height;
     int     weidht;
 }   t_texture;
-
-
+*/
+/*
 typedef struct s_player 
 {
     double  x;            // Posición X en el mundo (columna), en unidades de celda
@@ -80,6 +83,22 @@ typedef struct s_player
     double  dist;                                 // Distancia sin corregir
     double  corr;                                 // Distancia corregida (anti fish-eye)
     double  wall_h;
+}   t_player;
+*/
+
+typedef struct s_player
+{
+    double  x;
+    double  y;
+    double  dir;
+    double  dist;
+    double  rel;
+    double  corr;
+    double  wall_h;
+    double  hit_x;
+    double  hit_y;
+    int     side;      // 0 = vertical, 1 = horizontal
+    double  tex_rel_x;
 }   t_player;
 
 typedef struct s_map
@@ -98,7 +117,7 @@ typedef struct s_contex
     t_player  *pl;        // Estado del jugador/cámara
     double    proj_dist; // Distancia al plano de proyección: (WIDTH/2)/tan(FOV/2)
     t_map	*map_g;
-    t_texture *text;
+    t_img	*text;
 }   t_contex;
 
 void	counter_row(t_map *map, char *line, int fd);
@@ -112,13 +131,15 @@ double	degrees_to_radians(double degrees);
 double	calc_max_dist(int width, int height);
 int		map_is_wall(t_map *map, int mx, int my);
 void	find_player(t_player *pl, t_map *map);
-double cast_ray(double ax, const t_player *pl, t_map *map);
-void	draw_column(t_contex *contex, int x, double wall_h, int wall_rgb);
+double cast_ray(double ax, t_player *pl, t_map *map);
+//void	draw_column(t_contex *contex, int x, double wall_h, int wall_rgb);
 void	render_frame(t_contex *app);
 int		loop_hook(t_contex *app);
 int     handle_keypress(int keycode, t_contex *contex);
 void	ft_error(const char *msg);
 void	map_validation(t_map **map, int argc, char **argv);
 void    init_pos_pl(t_player *pl, t_map *map, int y, int x);
+int get_tex_color(t_img *tex, int tx, int ty);
+void    draw_column(t_contex *contex, int x, double wall_h, double tex_x_rel);
 #endif
 

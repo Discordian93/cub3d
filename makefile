@@ -6,7 +6,7 @@
 #    By: yuliano <yuliano@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/03/11 05:32:19 by yuliano           #+#    #+#              #
-#    Updated: 2025/11/08 22:04:19 by yuliano          ###   ########.fr        #
+#    Updated: 2025/11/15 22:06:11 by yuliano          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -18,6 +18,7 @@ LIBS = libft/libft.a ./mlx/libmlx.a -lX11 -lXext -lm
 
 OBJS = $(OBJ_DIR)/util1.o \
 	$(OBJ_DIR)/util2.o \
+	$(OBJ_DIR)/util3.o \
 	$(OBJ_DIR)/main.o \
 	$(OBJ_DIR)/map_read.o \
 	$(OBJ_DIR)/raycasting.o

@@ -6,7 +6,7 @@
 /*   By: yuliano <yuliano@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/04 21:20:22 by yuliano           #+#    #+#             */
-/*   Updated: 2025/11/13 07:39:02 by yuliano          ###   ########.fr       */
+/*   Updated: 2025/11/15 22:29:41 by yuliano          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,7 @@
 void init_contex(t_contex **contex)
 {
 	t_player *pl;
+	t_img	*text;
 	
 	*contex = malloc(sizeof(t_contex));
 	if(!*contex)
@@ -27,6 +28,10 @@ void init_contex(t_contex **contex)
 	if (!pl)
 		ft_error("ERROR\n");
 	(*contex)->pl = pl;
+	text =malloc(sizeof(t_img));
+	if (!text)
+		ft_error("ERROR\n");
+	(*contex)->text;
 }
 
 int main(int argc, char **argv)
@@ -53,6 +58,16 @@ int main(int argc, char **argv)
                                        &contex->img.bpp,
                                        &contex->img.line_len,
                                        &contex->img.endian);
+
+
+	contex->text = mlx_xpm_file_to_image(contex->mlx, "textures/west.xpm",
+                                             &contex->text->widht,
+                                             &contex->text->height);
+	contex->text->addr = mlx_get_data_addr(contex->text->ptr,
+                 &contex->text->bpp,
+                 &contex->text->line_len,
+                 &contex->text->endian);
+
 
     find_player(contex->pl, contex->map_g);                           // Localiza 'p' en el mapa y centra jugador
     contex->proj_dist = (WIDTH / 2.0) / tan(FOV_RAD / 2.0); // Distancia al plano de proyección
