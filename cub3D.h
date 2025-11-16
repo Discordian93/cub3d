@@ -6,7 +6,7 @@
 /*   By: ypacileo <ypacileo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/01 17:03:53 by ypacileo          #+#    #+#             */
-/*   Updated: 2025/11/16 15:57:52 by ypacileo         ###   ########.fr       */
+/*   Updated: 2025/11/16 16:55:02 by ypacileo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,11 +72,12 @@ typedef struct s_player
     double  dist;
     double  rel;
     double  corr;
+    double  shade;
     double  wall_h;
     double  hit_x;
     double  hit_y;
     int     side;      // 0 = vertical, 1 = horizontal
-    double  tex_rel_x;
+    double  tex_x_rel;
 }   t_player;
 
 typedef struct s_map
@@ -119,6 +120,8 @@ void	ft_error(const char *msg);
 void	map_validation(t_map **map, int argc, char **argv);
 void    init_pos_pl(t_player *pl, t_map *map, int y, int x);
 int get_tex_color(t_img *tex, int tx, int ty);
-void    draw_column(t_contex *contex, int x, double wall_h, double tex_x_rel);
+//void    draw_column(t_contex *contex, int x, double wall_h, double tex_x_rel);
+void    draw_column(t_contex *contex, int x);
+int apply_shade(int color, double shade);
 #endif
 

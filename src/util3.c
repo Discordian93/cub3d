@@ -6,7 +6,7 @@
 /*   By: ypacileo <ypacileo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/15 13:14:33 by yuliano           #+#    #+#             */
-/*   Updated: 2025/11/16 15:54:34 by ypacileo         ###   ########.fr       */
+/*   Updated: 2025/11/16 16:52:52 by ypacileo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,9 +31,39 @@ int get_tex_color(t_img *tex, int tx, int ty)
 /*            - Cerca  ⇒ k≈1 (más claro)                                       */
 /*            - Lejos  ⇒ k≈0.2 (más oscuro)                                    */
 /* -------------------------------------------------------------------------- */
-double shade_from_dist(double corr)
+double  shade_from_dist(double corr)
 {
-    double k = 1.0 / (1.0 + 0.15 * corr * corr); // Curva suave decreciente con la distancia
-    if (k < 0.20) k = 0.20;                      // Clamp mínimo (evita negro total)
+    double  k;
+
+    /* Atenuación lineal muy suave */
+    k = 1.0 - (corr * 0.02);
+    if (k > 1.0)
+        k = 1.0;
+    if (k < 0.80)
+        k = 0.80;
     return (k);
 }
+
+
+int apply_shade(int color, double shade)
+{
+    int r;
+    int g;
+    int b;
+
+    if (shade < 0.0)
+        shade = 0.0;
+    if (shade > 1.0)
+        shade = 1.0;
+    r = (int)(((color >> 16) & 0xFF) * shade);
+    g = (int)(((color >> 8) & 0xFF) * shade);
+    b = (int)((color & 0xFF) * shade);
+    if (r > 255)
+        r = 255;
+    if (g > 255)
+        g = 255;
+    if (b > 255)
+        b = 255;
+    return ((r << 16) | (g << 8) | b);
+}
+

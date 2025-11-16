@@ -6,12 +6,11 @@
 /*   By: ypacileo <ypacileo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/08 19:24:37 by yuliano           #+#    #+#             */
-/*   Updated: 2025/11/16 15:53:26 by ypacileo         ###   ########.fr       */
+/*   Updated: 2025/11/16 17:23:46 by ypacileo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "cub3D.h"
-
 
 /* -------------------------------------------------------------------------- */
 /*  cast_ray                                                                  */
@@ -110,7 +109,7 @@ double  cast_ray(double ax, t_player *pl, t_map *map)
 /*  Objetivo: Dibujar la columna x con una pared centrada de altura wall_h,   */
 /*            rellenando techo y suelo con sus colores.                        */
 /* -------------------------------------------------------------------------- */
-void    draw_column(t_contex *contex, int x, double wall_h, double tex_x_rel)
+void    draw_column(t_contex *contex, int x)
 {
     int     y_top;
     int     y_bot;
@@ -119,7 +118,9 @@ void    draw_column(t_contex *contex, int x, double wall_h, double tex_x_rel)
     int     tex_y;
     double  rel;
     int     color;
+    double  wall_h;
 
+    wall_h = contex->pl->wall_h;
     if (wall_h > HEIGHT)
         wall_h = HEIGHT;
     y_top = (int)((HEIGHT - wall_h) * 0.5);
@@ -128,16 +129,13 @@ void    draw_column(t_contex *contex, int x, double wall_h, double tex_x_rel)
     y_bot = y_top + (int)wall_h;
     if (y_bot > HEIGHT)
         y_bot = HEIGHT;
-
     y = 0;
     while (y < y_top)
         put_px(contex->img, x, y++, CEIL_COL);
-
-    /* --------- AQUÍ DIBUJAS LA TEXTURA EN LA PARTE DE LA PARED --------- */
-    tex_x = (int)(tex_x_rel * contex->text->widht);
+    tex_x = (int)(contex->pl->tex_x_rel * contex->text->widht);
     if (tex_x < 0)
         tex_x = 0;
-    if (tex_x >= contex->text->widht);
+    if (tex_x >= contex->text->widht)
         tex_x = contex->text->widht - 1;
     while (y < y_bot)
     {
@@ -148,11 +146,11 @@ void    draw_column(t_contex *contex, int x, double wall_h, double tex_x_rel)
         if (tex_y >= contex->text->height)
             tex_y = contex->text->height - 1;
         color = get_tex_color(contex->text, tex_x, tex_y);
+        color = apply_shade(color, contex->pl->shade);
         put_px(contex->img, x, y, color);
+
         y++;
     }
-    /* ------------------------------------------------------------------- */
-
     while (y < HEIGHT)
         put_px(contex->img, x, y++, FLOOR_COL);
 }
@@ -167,11 +165,10 @@ void    draw_column(t_contex *contex, int x, double wall_h, double tex_x_rel)
 /*            - Proyectar altura: wall_h = TILE_SZ * proj_dist / corr.        */
 /*            - Sombrear y dibujar columna.                                   */
 /* -------------------------------------------------------------------------- */
-void    render_frame(t_contex *app)
+void    render_frame(t_contex *contex)
 {
     int     x;            // Columna actual de la ventana (0 → WIDTH-1)
     double  ray_ang;      // Ángulo del rayo asociado a esta columna
-    double  shade;        // Factor de sombreado según la distancia
     double  cell_x;       // Parte fraccionaria de la coordenada X del impacto
     double  cell_y;       // Parte fraccionaria de la coordenada Y del impacto
     double  wall_x;       // Coordenada relativa en la pared (0..1)
@@ -198,8 +195,8 @@ void    render_frame(t_contex *app)
         Suma total:
             → ángulo real del rayo dentro del mundo.
         */
-        ray_ang = app->pl->dir
-            + atan(((double)x - (WIDTH / 2.0)) / app->proj_dist);
+        ray_ang = contex->pl->dir
+            + atan(((double)x - (WIDTH / 2.0)) / contex->proj_dist);
 
         /*
         --------------------------------------------------------------------------
@@ -210,7 +207,7 @@ void    render_frame(t_contex *app)
             - hit_x, hit_y  → punto exacto donde colisiona con un muro
             - side          → si golpeó un muro vertical u horizontal
         */
-        app->pl->dist = cast_ray(ray_ang, app->pl, app->map_g);
+        contex->pl->dist = cast_ray(ray_ang, contex->pl, contex->map_g);
 
         /*
         --------------------------------------------------------------------------
@@ -220,7 +217,7 @@ void    render_frame(t_contex *app)
         Diferencia angular respecto al frente del jugador.
         Si el rayo está muy a la izquierda o derecha, esta diferencia es grande.
         */
-        app->pl->rel = ray_ang - app->pl->dir;
+        contex->pl->rel = ray_ang - contex->pl->dir;
 
         /*
         Distancia corregida:
@@ -228,7 +225,7 @@ void    render_frame(t_contex *app)
         
         Esto evita que las paredes se vean curvadas o abombadas.
         */
-        app->pl->corr = app->pl->dist * cos(app->pl->rel);
+        contex->pl->corr = contex->pl->dist * cos(contex->pl->rel);
 
         /*
         --------------------------------------------------------------------------
@@ -240,8 +237,8 @@ void    render_frame(t_contex *app)
 
         Cuanto mayor sea la distancia corregida → pared se ve más pequeña.
         */
-        app->pl->wall_h = (TILE_SZ * app->proj_dist)
-            / (app->pl->corr + EPS);
+        contex->pl->wall_h = (TILE_SZ * contex->proj_dist)
+            / (contex->pl->corr + EPS);
 
         /*
         --------------------------------------------------------------------------
@@ -254,8 +251,8 @@ void    render_frame(t_contex *app)
         cell_x = parte fraccionaria (0..1).
         cell_y = parte fraccionaria (0..1).
         */
-        cell_x = app->pl->hit_x - floor(app->pl->hit_x);
-        cell_y = app->pl->hit_y - floor(app->pl->hit_y);
+        cell_x = contex->pl->hit_x - floor(contex->pl->hit_x);
+        cell_y = contex->pl->hit_y - floor(contex->pl->hit_y);
 
         /*
         --------------------------------------------------------------------------
@@ -272,7 +269,7 @@ void    render_frame(t_contex *app)
             → su textura se recorre a lo largo del eje X
             → usamos cell_x
         */
-        if (app->pl->side == 0)
+        if (contex->pl->side == 0)
             wall_x = cell_y;  // Muro vertical
         else
             wall_x = cell_x;  // Muro horizontal
@@ -281,29 +278,20 @@ void    render_frame(t_contex *app)
         wall_x ya está en el rango [0..1).
         Es la posición horizontal relativa dentro de la textura.
         */
-        app->pl->tex_rel_x = wall_x;
+        contex->pl->tex_x_rel = wall_x;
 
         /*
         --------------------------------------------------------------------------
         CÁLCULO DE SOMBRA SEGÚN DISTANCIA
         --------------------------------------------------------------------------
 
-        shade disminuye a medida que la pared está más lejos.
-        */
-        //shade = shade_from_dist(app->pl->corr);
+        shade disminuye a medida que la pared está más lejos.*/
+        
+        contex->pl->shade = shade_from_dist(contex->pl->corr);
 
-        /*
-        --------------------------------------------------------------------------
-        DIBUJAR LA COLUMNA DE LA PARED EN LA VENTANA
-        --------------------------------------------------------------------------
-
-        De momento se usa color plano:
-            mul_color_rgb(WALL_COL, shade)
-
-        Más adelante aquí llamarás a draw_column_textured()
-        usando tex_x_rel y la textura correspondiente.
-        */
-        draw_column(app, x,app->pl->wall_h,app->pl->tex_rel_x );
+    
+        
+        draw_column(contex, x);
 
         x++;  // Siguiente columna de pantalla
     }
