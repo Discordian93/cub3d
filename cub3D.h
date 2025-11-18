@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   cub3D.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ypacileo <ypacileo@student.42.fr>          +#+  +:+       +#+        */
+/*   By: yuliano <yuliano@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/01 17:03:53 by ypacileo          #+#    #+#             */
-/*   Updated: 2025/11/16 17:30:59 by ypacileo         ###   ########.fr       */
+/*   Updated: 2025/11/18 06:35:43 by yuliano          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,8 +23,8 @@
 #include "libft.h"
 
 
-# define WIDTH   1800           // Ancho de la ventana en píxeles
-# define HEIGHT  1200        // Alto de la ventana en píxeles
+# define WIDTH   1000           // Ancho de la ventana en píxeles
+# define HEIGHT  600        // Alto de la ventana en píxeles
 # define KEY_LEFT   65363
 # define KEY_RIGHT  65361
 # define KEY_ESC 65307
@@ -93,7 +93,11 @@ typedef struct s_contex
     void        *mlx;       // Contexto MLX
     void        *win;       // Ventana MLX
     t_img       *img;     // Framebuffer donde dibujamos
-    t_img       *text;
+    t_img       *tex_nort; // textura norte
+    t_img       *tex_so;  //textura sur
+    t_img       *tex_we; //textura oeste
+    t_img       *tex_ea; //textura este
+    t_img       *text;   //textura seleccionda
     t_player    *pl;        // Estado del jugador/cámara
     double      proj_dist; // Distancia al plano de proyección: (WIDTH/2)/tan(FOV/2)
     t_map       *map_g;
@@ -123,5 +127,6 @@ int get_tex_color(t_img *tex, int tx, int ty);
 //void    draw_column(t_contex *contex, int x, double wall_h, double tex_x_rel);
 void    draw_column(t_contex *contex, int x);
 int apply_shade(int color, double shade);
+t_img *select_texture(t_contex *c, double dirx, double diry);
 #endif
 

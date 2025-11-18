@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   raycasting.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ypacileo <ypacileo@student.42.fr>          +#+  +:+       +#+        */
+/*   By: yuliano <yuliano@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/08 19:24:37 by yuliano           #+#    #+#             */
-/*   Updated: 2025/11/16 19:29:53 by ypacileo         ###   ########.fr       */
+/*   Updated: 2025/11/18 07:36:58 by yuliano          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -176,6 +176,8 @@ void    render_frame(t_contex *contex)
     double  cell_x;       // Parte fraccionaria de la coordenada X del impacto
     double  cell_y;       // Parte fraccionaria de la coordenada Y del impacto
     double  wall_x;       // Coordenada relativa en la pared (0..1)
+    double dirx;
+    double  diry;
   
     x = 0;                // Empezamos por la columna 0 de la pantalla
 
@@ -201,6 +203,10 @@ void    render_frame(t_contex *contex)
         */
         ray_ang = contex->pl->dir
             + atan(((double)x - (WIDTH / 2.0)) / contex->proj_dist);
+
+         /* Dirección del rayo en este píxel */
+        dirx = cos(ray_ang);
+        diry = sin(ray_ang);
 
         /*
         --------------------------------------------------------------------------
@@ -283,6 +289,8 @@ void    render_frame(t_contex *contex)
         Es la posición horizontal relativa dentro de la textura.
         */
         contex->pl->tex_x_rel = wall_x;
+
+        contex->text = select_texture(contex,dirx, diry);
 
         /*
         --------------------------------------------------------------------------
