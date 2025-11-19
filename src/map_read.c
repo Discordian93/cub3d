@@ -3,20 +3,15 @@
 /*                                                        :::      ::::::::   */
 /*   map_read.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ypacileo <ypacileo@student.42.fr>          +#+  +:+       +#+        */
+/*   By: yuliano <yuliano@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/08 18:15:07 by yuliano           #+#    #+#             */
-/*   Updated: 2025/11/09 11:42:28 by ypacileo         ###   ########.fr       */
+/*   Updated: 2025/11/19 21:45:50 by yuliano          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "cub3D.h"
 
-void	ft_error(const char *msg)
-{
-	perror(msg);
-	exit(EXIT_FAILURE);
-}
 
 
 void	map_validation(t_map **map, int argc, char **argv)

@@ -15,110 +15,89 @@
 #include <math.h>
 #include <stdio.h>
 
-#define MOVE_SPEED 0.5  // velocidad por paso
+#define MOVE_SPEED 0.08
 
 
-/*
-** degrees_to_radians
-** Convierte grados a radianes.
-*/
-double  degrees_to_radians(double degrees)
+double	degrees_to_radians(double degrees)
 {
-    return (degrees * (M_PI / 180.0));
+	return (degrees * (M_PI / 180.0));
 }
 
-
-
-/* -------------------------------------------------------------------------- */
-/*  map_is_wall                                                               */
-/*  Indica si la celda (mx,my) es muro. Fuera del mapa = muro implícito.      */
-/* -------------------------------------------------------------------------- */
-int map_is_wall(t_map *map, int mx, int my)
+int	map_is_wall(t_map *map, int mx, int my)
 {
-    if (mx < 0 || mx >= map->width || my < 0 || my >= map->height)
-        return (1);
-    return (map->map[my][mx] == '1');
+	if (mx < 0 || mx >= map->width || my < 0 || my >= map->height)
+		return (1);
+	return (map->map[my][mx] == '1');
 }
 
-/*
-** normalize_angle
-** Devuelve el ángulo normalizado al rango [0, 2π).
-*/
-static double normalize_angle(double angle)
+double	normalize_angle(double angle)
 {
-    double two_pi;
+	double	two_pi;
 
-    two_pi = 2.0 * M_PI;
-    angle = fmod(angle, two_pi);
-    if (angle < 0.0)
-        angle += two_pi;
-    return (angle);
+	two_pi = 2.0 * M_PI;
+	angle = fmod(angle, two_pi);
+	if (angle < 0.0)
+		angle += two_pi;
+	return (angle);
 }
 
-int is_there_a_player(t_map *map, int y, int x)
+int	is_there_a_player(t_map *map, int y, int x)
 {
-    if (map->map[y][x] == 'E' || map->map[y][x] == 'N' \
-        || map->map[y][x] == 'W' || map->map[y][x] == 'S')
-        return (1);
-    return (0);
+	if (map->map[y][x] == 'E' || map->map[y][x] == 'N'
+		|| map->map[y][x] == 'W' || map->map[y][x] == 'S')
+		return (1);
+	return (0);
 }
 
-void    init_pos_pl(t_player *pl, t_map *map, int y, int x)
+void	init_pos_pl(t_player *pl, t_map *map, int y, int x)
 {
-    double dir;
+	double	dir;
 
-    dir = 0.0;
-    if (map->map[y][x] == 'E')
-        dir = degrees_to_radians(0);
-    else if (map->map[y][x] == 'N')
-        dir = degrees_to_radians(90);
-    else if (map->map[y][x] == 'W')
-        dir = degrees_to_radians(180);
-    else if (map->map[y][x] == 'S')
-        dir = degrees_to_radians(270);
-    pl->y = y + 0.5;
-    pl->x = x + 0.5;
-    pl->corr = 0.0;
-    pl->rel = 0.0;
-    pl->dir = normalize_angle(dir); /* ¡no borrar la orientación! */
+	dir = 0.0;
+	if (map->map[y][x] == 'E')
+		dir = degrees_to_radians(0);
+	else if (map->map[y][x] == 'N')
+		dir = degrees_to_radians(90);
+	else if (map->map[y][x] == 'W')
+		dir = degrees_to_radians(180);
+	else if (map->map[y][x] == 'S')
+		dir = degrees_to_radians(270);
+	pl->y = y + 0.5;
+	pl->x = x + 0.5;
+	pl->corr = 0.0;
+	pl->rel = 0.0;
+	pl->dir = normalize_angle(dir);
 }
 
-/* -------------------------------------------------------------------------- */
-/*  find_player                                                               */
-/*  Busca E/N/W/S y coloca al jugador centrado en esa celda con su orientación*/
-/* -------------------------------------------------------------------------- */
-void find_player(t_player *pl, t_map *map)
+void	find_player(t_player *pl, t_map *map)
 {
-    int y;
-    int x;
+	int	y;
+	int	x;
 
-    y = 0;
-    while (y < map->height)
-    {
-        x = 0;
-        while (x < map->width)
-        {
-            if (is_there_a_player(map, y, x))
-            {
-                init_pos_pl(pl, map, y, x);
-                return ;
-            }
-            x++;
-        }
-        y++;
-    }
+	y = 0;
+	while (y < map->height)
+	{
+		x = 0;
+		while (x < map->width)
+		{
+			if (is_there_a_player(map, y, x))
+			{
+				init_pos_pl(pl, map, y, x);
+				return ;
+			}
+			x++;
+		}
+		y++;
+	}
 }
-
 
 void	move_player(t_player *pl, t_map *map, double move_x, double move_y)
 {
-	double new_x;
-	double new_y;
+	double	new_x;
+	double	new_y;
 
 	new_x = pl->x + move_x;
 	new_y = pl->y + move_y;
-
-	// Comprobamos colisiones
 	if (!map_is_wall(map, (int)new_x, (int)new_y))
 	{
 		pl->x = new_x;
@@ -127,16 +106,16 @@ void	move_player(t_player *pl, t_map *map, double move_x, double move_y)
 }
 
 /*
-** handle_keypress: ahora con movimiento basado en orientación
+** Movimiento y rotación. ESC libera todo y sale.
 */
 int	handle_keypress(int keycode, t_contex *contex)
 {
-	double step;
+	double	step;
 
-	step = 0.05;
+	step = 0.30;
 	if (keycode == KEY_ESC)
 	{
-		mlx_loop_end(contex->mlx);
+		ft_clean(contex);
 		exit(0);
 	}
 	else if (keycode == KEY_LEFT)
@@ -153,17 +132,15 @@ int	handle_keypress(int keycode, t_contex *contex)
 			sin(contex->pl->dir) * -MOVE_SPEED);
 	else if (keycode == KEY_A)
 		move_player(contex->pl, contex->map_g,
-			cos(contex->pl->dir - M_PI/2) * MOVE_SPEED,
-			sin(contex->pl->dir - M_PI/2) * MOVE_SPEED);
+			cos(contex->pl->dir - M_PI / 2.0) * MOVE_SPEED,
+			sin(contex->pl->dir - M_PI / 2.0) * MOVE_SPEED);
 	else if (keycode == KEY_D)
 		move_player(contex->pl, contex->map_g,
-			cos(contex->pl->dir + M_PI/2) * MOVE_SPEED,
-			sin(contex->pl->dir + M_PI/2) * MOVE_SPEED);
-
+			cos(contex->pl->dir + M_PI / 2.0) * MOVE_SPEED,
+			sin(contex->pl->dir + M_PI / 2.0) * MOVE_SPEED);
 	printf("dir = %.2f rad (%.1f°) | pos = (%.2f, %.2f)\n",
 		contex->pl->dir,
 		contex->pl->dir * 180.0 / M_PI,
 		contex->pl->x, contex->pl->y);
-
 	return (0);
 }

@@ -6,7 +6,7 @@
 /*   By: yuliano <yuliano@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/15 13:14:33 by yuliano           #+#    #+#             */
-/*   Updated: 2025/11/18 06:29:56 by yuliano          ###   ########.fr       */
+/*   Updated: 2025/11/18 20:23:02 by yuliano          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,8 +39,8 @@ double  shade_from_dist(double corr)
     k = 1.0 - (corr * 0.02);
     if (k > 1.0)
         k = 1.0;
-    if (k < 0.80)
-        k = 0.80;
+    if (k < 0.60)
+        k = 0.60;
     return (k);
 }
 
@@ -68,6 +68,7 @@ int apply_shade(int color, double shade)
 }
 
 
+/*
 t_img *select_texture(t_contex *c, double dirx, double diry)
 {
     if (c->pl->side == 0)
@@ -85,4 +86,4 @@ t_img *select_texture(t_contex *c, double dirx, double diry)
             return (c->tex_so);
     }
 }
-
+*/

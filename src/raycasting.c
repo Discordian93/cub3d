@@ -6,7 +6,7 @@
 /*   By: yuliano <yuliano@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/08 19:24:37 by yuliano           #+#    #+#             */
-/*   Updated: 2025/11/18 07:36:58 by yuliano          ###   ########.fr       */
+/*   Updated: 2025/11/18 21:02:21 by yuliano          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,92 +20,61 @@
 /* -------------------------------------------------------------------------- */
 double  cast_ray(double ax, t_player *pl, t_map *map)
 {
-    double  rx;      // Posición actual del rayo en X (coordenadas del mundo)
-    double  ry;      // Posición actual del rayo en Y (coordenadas del mundo)
-    double  prev_rx; // Posición anterior del rayo en X (antes de avanzar un paso)
-    double  prev_ry; // Posición anterior del rayo en Y
-    double  dirx;    // Dirección del rayo en el eje X (vector normalizado)
-    double  diry;    // Dirección del rayo en el eje Y
-    double  dist;    // Distancia total recorrida por el rayo
-    int     mx;      // Celda actual X en el mapa (entero)
-    int     my;      // Celda actual Y en el mapa (entero)
-    int     pmx;     // Celda anterior X en el mapa
-    int     pmy;     // Celda anterior Y en el mapa
+    double  rx;
+    double  ry;
+    double  prev_rx;
+    double  prev_ry;
+    double  dirx;
+    double  diry;
+    double  dist;
+    int     mx;
+    int     my;
+    int     pmx;
+    int     pmy;
 
-    /* El rayo empieza exactamente en la posición del jugador */
     rx = pl->x;
     ry = pl->y;
-
-    /* Dirección del rayo calculada a partir del ángulo ax */
-    dirx = cos(ax);   // cuánto avanza el rayo en X por cada unidad
-    diry = sin(ax);   // cuánto avanza el rayo en Y por cada unidad
-
-    dist = 0.0;       // distancia inicial recorrida = 0
-
-    /* Inicializamos las celdas previas */
+    dirx = cos(ax);
+    diry = sin(ax);
+    dist = 0.0;
     pmx = (int)floor(rx);
     pmy = (int)floor(ry);
-
-    /* Avanza el rayo de forma incremental en pasos pequeños */
-    while (dist < 64.0)     // 64 es un límite de seguridad (máxima distancia permitida)
+    while (dist < 64.0)
     {
-        /* Guardamos la posición anterior antes de avanzar */
         prev_rx = rx;
         prev_ry = ry;
-
-        /* Avanzamos un pequeño paso en la dirección del rayo */
         rx += dirx * STEP;
         ry += diry * STEP;
-
-        /* Sumamos el avance a la distancia total recorrida */
         dist += STEP;
-
-        /* Convertimos la posición del rayo a una celda del mapa */
         mx = (int)floor(rx);
         my = (int)floor(ry);
-
-        /* Si la celda actual es un muro → el rayo impactó */
         if (map_is_wall(map, mx, my))
         {
-            /* usamos la posición ANTES del muro*/
             pl->hit_x = prev_rx;
             pl->hit_y = prev_ry;
-
-            dist -= STEP;
-
-            /*
-            Determinamos si golpeamos un muro vertical u horizontal:
-
-            - Si cambió solo la X (mx ≠ pmx) → Este/Oeste.
-              → side = 0
-
-            - Si cambió solo la Y (my ≠ pmy) → lado Norte/Sur.
-              → side = 1
-
-            Nota:
-            Esto funciona porque el rayo avanza paso a paso,
-           		y podemos comparar la celda justo antes del impacto con la celda actual.
-            */
             if (mx != pmx && my == pmy)
-                pl->side = 0;   // Este/Oeste.
+            {
+                if (mx > pmx)
+                    pl->face = FACE_WE;  /* venías desde la izquierda */
+                else
+                    pl->face = FACE_EA;  /* venías desde la derecha  */
+            }
             else if (my != pmy && mx == pmx)
-                pl->side = 1;   // Norte/Sur.
+            {
+                if (my > pmy)
+                    pl->face = FACE_NO;  /* venías desde arriba      */
+                else
+                    pl->face = FACE_SO;  /* venías desde abajo       */
+            }
             else
-                pl->side = 0;   // Caso raro (diagonal mínima) → tratamos como vertical
-
-            break ;   // Detenemos el avance, ya chocamos con algo
+                pl->face = FACE_NO;      /* caso raro (esquina)     */
+            break ;
         }
-
-        /* Actualizamos las celdas previas para la siguiente iteración */
         pmx = mx;
         pmy = my;
     }
-
-    /* Devolvemos la distancia recorrida por el rayo */
     return (dist);
 }
-
-
 
 
 /* -------------------------------------------------------------------------- */
@@ -136,23 +105,22 @@ void    draw_column(t_contex *contex, int x)
     y = 0;
     while (y < y_top)
         put_px(contex->img, x, y++, CEIL_COL);
-    tex_x = (int)(contex->pl->tex_x_rel * contex->text->width);
+    tex_x = (int)(contex->pl->tex_x_rel * contex->selec_text.width);
     if (tex_x < 0)
         tex_x = 0;
-    if (tex_x >= contex->text->width)
-        tex_x = contex->text->width - 1;
+    if (tex_x >= contex->selec_text.width)
+        tex_x = contex->selec_text.width - 1;
     while (y < y_bot)
     {
         rel = (double)(y - y_top) / wall_h;
-        tex_y = (int)(rel * contex->text->height);
+        tex_y = (int)(rel * contex->selec_text.height);
         if (tex_y < 0)
             tex_y = 0;
-        if (tex_y >= contex->text->height)
-            tex_y = contex->text->height - 1;
-        color = get_tex_color(contex->text, tex_x, tex_y);
+        if (tex_y >= contex->selec_text.height)
+            tex_y = contex->selec_text.height - 1;
+        color = get_tex_color(&contex->selec_text, tex_x, tex_y);
         color = apply_shade(color, contex->pl->shade);
         put_px(contex->img, x, y, color);
-
         y++;
     }
     while (y < HEIGHT)
@@ -171,141 +139,45 @@ void    draw_column(t_contex *contex, int x)
 /* -------------------------------------------------------------------------- */
 void    render_frame(t_contex *contex)
 {
-    int     x;            // Columna actual de la ventana (0 → WIDTH-1)
-    double  ray_ang;      // Ángulo del rayo asociado a esta columna
-    double  cell_x;       // Parte fraccionaria de la coordenada X del impacto
-    double  cell_y;       // Parte fraccionaria de la coordenada Y del impacto
-    double  wall_x;       // Coordenada relativa en la pared (0..1)
-    double dirx;
-    double  diry;
-  
-    x = 0;                // Empezamos por la columna 0 de la pantalla
+    int     x;
+    double  ray_ang;
+    double  cell_x;
+    double  cell_y;
+    double  wall_x;
 
-    // Bucle principal: recorre TODA la ventana de izquierda a derecha
+    x = 0;
     while (x < WIDTH)
     {
-        /*
-        --------------------------------------------------------------------------
-        CÁLCULO DEL ÁNGULO DEL RAYO PARA LA COLUMNA "x"
-        --------------------------------------------------------------------------
-
-        ((x - WIDTH/2) / proj_dist)
-            → convierte la posición del píxel en pantalla en un ángulo relativo.
-
-        atan(...)
-            → obtiene ese ángulo relativo en radianes.
-
-        contex->pl->dir
-            → dirección absoluta del jugador en el mundo.
-
-        Suma total:
-            → ángulo real del rayo dentro del mundo.
-        */
         ray_ang = contex->pl->dir
             + atan(((double)x - (WIDTH / 2.0)) / contex->proj_dist);
 
-         /* Dirección del rayo en este píxel */
-        dirx = cos(ray_ang);
-        diry = sin(ray_ang);
-
-        /*
-        --------------------------------------------------------------------------
-        LANZAMOS EL RAYO
-        --------------------------------------------------------------------------
-        cast_ray devuelve la distancia cruda del rayo.
-        PERO también modifica dentro de contex->pl:
-            - hit_x, hit_y  → punto exacto donde colisiona con un muro
-            - side          → si golpeó un muro vertical u horizontal
-        */
         contex->pl->dist = cast_ray(ray_ang, contex->pl, contex->map_g);
 
-        /*
-        --------------------------------------------------------------------------
-        CORRECCIÓN DEL FISH-EYE
-        --------------------------------------------------------------------------
-
-        Diferencia angular respecto al frente del jugador.
-        Si el rayo está muy a la izquierda o derecha, esta diferencia es grande.
-        */
         contex->pl->rel = ray_ang - contex->pl->dir;
-
-        /*
-        Distancia corregida:
-            dist_corregida = dist * cos(rel)
-        
-        Esto evita que las paredes se vean curvadas o abombadas.
-        */
         contex->pl->corr = contex->pl->dist * cos(contex->pl->rel);
-
-        /*
-        --------------------------------------------------------------------------
-        CÁLCULO DE LA ALTURA DE LA PARED (PROYECCIÓN PERSPECTIVA)
-        --------------------------------------------------------------------------
-
-        wall_h = tamaño_real_del_bloque * distancia_del_plano_proyección /
-                 distancia_corregida
-
-        Cuanto mayor sea la distancia corregida → pared se ve más pequeña.
-        */
         contex->pl->wall_h = (TILE_SZ * contex->proj_dist)
             / (contex->pl->corr + EPS);
 
-        /*
-        --------------------------------------------------------------------------
-        OBTENER FRACCIÓN DENTRO DE LA CELDA DONDE IMPACTÓ EL RAYO
-        --------------------------------------------------------------------------
-
-        hit_x = 7.25 → el impacto está en la celda 7, al 25% dentro de ella.
-        hit_y = 4.80 → en la celda 4, al 80% dentro.
-
-        cell_x = parte fraccionaria (0..1).
-        cell_y = parte fraccionaria (0..1).
-        */
         cell_x = contex->pl->hit_x - floor(contex->pl->hit_x);
         cell_y = contex->pl->hit_y - floor(contex->pl->hit_y);
 
-        /*
-        --------------------------------------------------------------------------
-        SELECCIONAR SI LA TEXTURA SE RECORRE EN X O EN Y
-        --------------------------------------------------------------------------
-
-        Si golpeamos un muro VERTICAL (side == 0):
-            → el muro es vertical (pared Este/Oeste)
-            → su textura se recorre a lo largo del eje Y
-            → usamos cell_y
-
-        Si golpeamos un muro HORIZONTAL (side == 1):
-            → pared Norte/Sur
-            → su textura se recorre a lo largo del eje X
-            → usamos cell_x
+        /* 
+        Si la cara es EA o WE → pared vertical → se recorre en Y (cell_y)
+        Si la cara es NO o SO → pared horizontal → se recorre en X (cell_x)
         */
-        if (contex->pl->side == 0)
-            wall_x = cell_y;  // Muro vertical Este/oeste
+        if (contex->pl->face == FACE_EA || contex->pl->face == FACE_WE)
+            wall_x = cell_y;
         else
-            wall_x = cell_x;  // Muro horizontal Norte/sur
+            wall_x = cell_x;
 
-        /*
-        wall_x ya está en el rango [0..1).
-        Es la posición horizontal relativa dentro de la textura.
-        */
         contex->pl->tex_x_rel = wall_x;
 
-        contex->text = select_texture(contex,dirx, diry);
+        /* seleccionar textura según face */
+        contex->selec_text = contex->text[contex->pl->face];
 
-        /*
-        --------------------------------------------------------------------------
-        CÁLCULO DE SOMBRA SEGÚN DISTANCIA
-        --------------------------------------------------------------------------
-
-        shade disminuye a medida que la pared está más lejos.*/
-        
         contex->pl->shade = shade_from_dist(contex->pl->corr);
-
-    
-        
         draw_column(contex, x);
-
-        x++;  // Siguiente columna de pantalla
+        x++;
     }
 }
 
@@ -315,10 +187,10 @@ void    render_frame(t_contex *contex)
 /*  Objetivo: Función de refresco por frame. Dibuja el frame y lo blittea     */
 /*            a la ventana.                                                    */
 /* -------------------------------------------------------------------------- */
-int loop_hook(t_contex *app)
+int loop_hook(t_contex *contex)
 {
-    render_frame(app);                              // Rellena el framebuffer con la escena
-    mlx_put_image_to_window(app->mlx,               // Blit a la ventana en (0,0)
-                            app->win, app->img->ptr, 0, 0);
+    render_frame(contex);                              // Rellena el framebuffer con la escena
+    mlx_put_image_to_window(contex->mlx,               // Blit a la ventana en (0,0)
+                            contex->win, contex->img->ptr, 0, 0);
     return (0);                                     // Continuar el loop
 }

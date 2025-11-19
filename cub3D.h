@@ -6,7 +6,7 @@
 /*   By: yuliano <yuliano@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/01 17:03:53 by ypacileo          #+#    #+#             */
-/*   Updated: 2025/11/18 06:35:43 by yuliano          ###   ########.fr       */
+/*   Updated: 2025/11/19 23:10:13 by yuliano          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,6 +53,18 @@
 
 /* --------------------------------- MAPA ----------------------------------- */
 
+
+
+
+enum 
+{
+    FACE_NO, 
+    FACE_SO, 
+    FACE_EA, 
+    FACE_WE,
+	num_tex
+};
+
 typedef struct s_img 
 {
     void    *ptr;        // Puntero a la imagen MLX
@@ -62,6 +74,7 @@ typedef struct s_img
     int     endian;      // Endianness del buffer
 	int     height;
     int     width;
+    char	*name;
 }   t_img;
 
 typedef struct s_player
@@ -76,8 +89,9 @@ typedef struct s_player
     double  wall_h;
     double  hit_x;
     double  hit_y;
-    int     side;      // 0 = vertical, 1 = horizontal
+    //int     side;      // 0 = vertical, 1 = horizontal
     double  tex_x_rel;
+    int     face;
 }   t_player;
 
 typedef struct s_map
@@ -93,11 +107,8 @@ typedef struct s_contex
     void        *mlx;       // Contexto MLX
     void        *win;       // Ventana MLX
     t_img       *img;     // Framebuffer donde dibujamos
-    t_img       *tex_nort; // textura norte
-    t_img       *tex_so;  //textura sur
-    t_img       *tex_we; //textura oeste
-    t_img       *tex_ea; //textura este
-    t_img       *text;   //textura seleccionda
+    t_img       text[num_tex]; // textura norte
+	t_img		selec_text;
     t_player    *pl;        // Estado del jugador/cámara
     double      proj_dist; // Distancia al plano de proyección: (WIDTH/2)/tan(FOV/2)
     t_map       *map_g;
@@ -125,8 +136,15 @@ void	map_validation(t_map **map, int argc, char **argv);
 void    init_pos_pl(t_player *pl, t_map *map, int y, int x);
 int get_tex_color(t_img *tex, int tx, int ty);
 //void    draw_column(t_contex *contex, int x, double wall_h, double tex_x_rel);
+//void    draw_column(t_contex *contex, int x);
 void    draw_column(t_contex *contex, int x);
 int apply_shade(int color, double shade);
-t_img *select_texture(t_contex *c, double dirx, double diry);
+//t_img *select_texture(t_contex *c, double dirx, double diry);
+void    load_text(t_img text[num_tex], t_contex *context);
+void	free_map(t_map **map);
+void	ft_free_contex(t_contex *context);
+int     close_window(t_contex *contex);
+void	ft_clean(t_contex *contex);
+int	handle_destroy(t_contex *contex);
 #endif
 

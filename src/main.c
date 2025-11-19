@@ -6,7 +6,7 @@
 /*   By: yuliano <yuliano@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/04 21:20:22 by yuliano           #+#    #+#             */
-/*   Updated: 2025/11/18 06:38:12 by yuliano          ###   ########.fr       */
+/*   Updated: 2025/11/19 23:09:36 by yuliano          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,168 +14,109 @@
 #include "libft.h"
 #include "cub3D.h"
 
-
-void	ft_free_contex(t_contex **context)
-{
-	if((*context)->pl)
-		free((*context)->pl);
-	if ((*context)->tex_nort)
-		free((*context)->tex_nort);
-	if ((*context)->tex_so)
-		free((*context)->tex_so);
-	if ((*context)->tex_we)
-		free((*context)->tex_we);
-	if((*context)->tex_ea)
-		free((*context)->tex_ea);
-	if ((*context)->img)
-		free((*context)->img);
-	if(*context)
-		free(context);
-}
-
-
 void init_contex(t_contex **contex)
 {
-	t_player	*pl;
-	t_img		*tex_nort;
-	t_img		*tex_so;
-	t_img		*tex_we;
-	t_img		*tex_ea;
-	t_img		*img;
-	t_img		*text;
-	
-	*contex = malloc(sizeof(t_contex));
-	if(!*contex)
-		ft_error("ERROR\n");
-	pl = malloc(sizeof(t_player));
-	if (!pl)
-	{
-		ft_free_contex(contex);
-		ft_error("ERROR\n");
-	}
-	(*contex)->pl = pl;
-	tex_nort =malloc(sizeof(t_img));
-	if (!tex_nort)
-	{
-		ft_free_contex(contex);
-		ft_error("ERROR\n");
-	}
-	(*contex)->tex_nort = tex_nort;
-	tex_so = malloc(sizeof(t_img));
-	if (!tex_so)
-	{
-		ft_free_contex(contex);
-		ft_error("ERROR\n");
-	}
-	(*contex)->tex_so = tex_so;
-	tex_we = malloc(sizeof(t_img));
-	if (!tex_we)
-	{
-		ft_free_contex(contex);
-		ft_error("ERROR\n");
-	}
-	(*contex)->tex_we = tex_we;
-	tex_ea = malloc(sizeof(t_img));
-	if (!tex_ea)
-	{
-		ft_free_contex(contex);
-		ft_error("ERROR\n");
-	}
-	(*contex)->tex_ea = tex_ea;
-	text = malloc(sizeof(t_img));
-	if (!text)
-	{
-		ft_free_contex(contex);
-		ft_error("ERROR\n");
-	}
-	(*contex)->text = text;
-	img = malloc(sizeof(t_img));
-	if (!img)
-	{
-		ft_free_contex(contex);
-		ft_error("ERROR\n");
-	}
-	(*contex)->img = img;
-	(*contex)->mlx = NULL;
-	(*contex)->map_g = NULL;
-	(*contex)->win = NULL;
-	(*contex)->proj_dist = 0.0;
+    *contex = malloc(sizeof(t_contex));
+    if (!(*contex))
+        ft_error("ERROR\n");
+
+    ft_bzero(*contex, sizeof(t_contex));
+
+    (*contex)->pl = malloc(sizeof(t_player));
+    if (!(*contex)->pl)
+    {
+        ft_free_contex(*contex);
+        ft_error("ERROR\n");
+    }
+
+    (*contex)->img = malloc(sizeof(t_img));
+    if (!(*contex)->img)
+    {
+        ft_free_contex(*contex);
+        ft_error("ERROR\n");
+    }
 }
 
 
 
-int main(int argc, char **argv)
+/*
+** Carga de texturas: si falla algo, limpia y sale.
+*/
+void	load_text(t_img text[num_tex], t_contex *context)
 {
-	t_contex *contex;
-	int i;
-	
-	
+	int	i;
+
+	text[FACE_NO].name = "textures/rock.xpm";
+	text[FACE_SO].name = "textures/gray_wall.xpm";
+	text[FACE_EA].name = "textures/brick.xpm";
+	text[FACE_WE].name = "textures/Wolfenstein-Walls.xpm";
+	i = 0;
+	while (i < num_tex)
+	{
+		text[i].ptr = mlx_xpm_file_to_image(context->mlx,
+				text[i].name, &text[i].width, &text[i].height);
+		if (text[i].ptr == NULL)
+		{
+			ft_clean(context);
+			ft_error("Error loading texture\n");
+		}
+		text[i].addr = mlx_get_data_addr(text[i].ptr,
+				&text[i].bpp, &text[i].line_len, &text[i].endian);
+		if (text[i].addr == NULL)
+		{
+			ft_clean(context);
+			ft_error("Error loading texture\n");
+		}
+		i++;
+	}
+}
+
+/*
+** Handler para la cruz roja (evento 17 de la MLX).
+*/
+int	handle_destroy(t_contex *contex)
+{
+	ft_clean(contex);
+	exit(0);
+	return (0);
+}
+
+int	main(int argc, char **argv)
+{
+	t_contex	*contex;
+
 	init_contex(&contex);
 	map_validation(&contex->map_g, argc, argv);
 	contex->map_g->width = 40;
-	
-	contex->mlx = mlx_init();                           // Inicializa MLX
-    if (!contex->mlx)
-        return (1); // pendiente liberar memoria
-	
-    contex->win = mlx_new_window(contex->mlx, WIDTH, HEIGHT, \
-    							"Cub3D"); // Crea ventana
-    if (!contex->win)
-        return (1);                                 // Error al crear ventana, pendiente liberar memoria
-
-    contex->img->ptr = mlx_new_image(contex->mlx, WIDTH, HEIGHT); // Crea imagen
-    contex->img->addr = mlx_get_data_addr(contex->img->ptr,   // Obtiene buffer crudo
-                                       &contex->img->bpp,
-                                       &contex->img->line_len,
-                                       &contex->img->endian);
-
-
-	contex->tex_nort->ptr = mlx_xpm_file_to_image(contex->mlx, "textures/north.xpm",
-                                             &contex->tex_nort->width,
-                                             &contex->tex_nort->height);
-	contex->tex_nort->addr = mlx_get_data_addr(contex->tex_nort->ptr,
-                 &contex->tex_nort->bpp,
-                 &contex->tex_nort->line_len,
-                 &contex->tex_nort->endian);
-	
-
-	contex->tex_so->ptr = mlx_xpm_file_to_image(contex->mlx, "textures/blue_wall.xpm",
-                                             &contex->tex_so->width,
-                                             &contex->tex_so->height);
-	contex->tex_so->addr = mlx_get_data_addr(contex->tex_so->ptr,
-                 &contex->tex_so->bpp,
-                 &contex->tex_so->line_len,
-                 &contex->tex_so->endian);
-
-	contex->tex_we->ptr = mlx_xpm_file_to_image(contex->mlx, "textures/gray_wall.xpm",
-                                             &contex->tex_we->width,
-                                             &contex->tex_we->height);
-	contex->tex_we->addr = mlx_get_data_addr(contex->tex_we->ptr,
-                 &contex->tex_we->bpp,
-                 &contex->tex_we->line_len,
-                 &contex->tex_we->endian);
-				 
-	
-	contex->tex_ea->ptr = mlx_xpm_file_to_image(contex->mlx, "textures/rock.xpm",
-                                             &contex->tex_ea->width,
-                                             &contex->tex_ea->height);
-	contex->tex_ea->addr = mlx_get_data_addr(contex->tex_ea->ptr,
-                 &contex->tex_ea->bpp,
-                 &contex->tex_ea->line_len,
-                 &contex->tex_ea->endian);
-
-
-
-
-				 
-
-    find_player(contex->pl, contex->map_g);                           // Localiza 'p' en el mapa y centra jugador
-    contex->proj_dist = (WIDTH / 2.0) / tan(FOV_RAD / 2.0); // Distancia al plano de proyección
-
-    mlx_loop_hook(contex->mlx, &loop_hook, contex);      // Hook de render por frame
-	// Gancho de teclado: llama a handle_keypress cuando se pulsa una tecla.
-	mlx_key_hook(contex->win, handle_keypress, (void *)contex);
-    mlx_loop(contex->mlx);                             // Bucle de eventos MLX
-    return (0);                                    // Fin (normalmente no se alcanza)
-	
+	contex->mlx = mlx_init();
+	if (contex->mlx == NULL)
+	{
+		ft_clean(contex);
+		ft_error("Error initializing mlx\n");
 	}
+	contex->win = mlx_new_window(contex->mlx, WIDTH, HEIGHT, "Cub3D");
+	if (contex->win == NULL)
+	{
+		ft_clean(contex);
+		ft_error("Error initializing window\n");
+	}
+	contex->img->ptr = mlx_new_image(contex->mlx, WIDTH, HEIGHT);
+	if (contex->img->ptr == NULL)
+	{
+		ft_clean(contex);
+		ft_error("Error creating image\n");
+	}
+	contex->img->addr = mlx_get_data_addr(contex->img->ptr,
+			&contex->img->bpp,
+			&contex->img->line_len,
+			&contex->img->endian);
+	load_text(contex->text, contex);
+	find_player(contex->pl, contex->map_g);
+	contex->proj_dist = (WIDTH / 2.0) / tan(FOV_RAD / 2.0);
+	mlx_loop_hook(contex->mlx, &loop_hook, contex);
+	/* KeyPress o KeyRelease según prefieras */
+	mlx_hook(contex->win, 3, 1L << 1, handle_keypress, contex);
+	mlx_hook(contex->win, 17, 0, handle_destroy, contex);
+	mlx_loop(contex->mlx);
+	return (0);
+}

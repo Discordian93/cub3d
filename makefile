@@ -6,7 +6,7 @@
 #    By: yuliano <yuliano@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/03/11 05:32:19 by yuliano           #+#    #+#              #
-#    Updated: 2025/11/15 22:06:11 by yuliano          ###   ########.fr        #
+#    Updated: 2025/11/19 23:10:43 by yuliano          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -21,7 +21,8 @@ OBJS = $(OBJ_DIR)/util1.o \
 	$(OBJ_DIR)/util3.o \
 	$(OBJ_DIR)/main.o \
 	$(OBJ_DIR)/map_read.o \
-	$(OBJ_DIR)/raycasting.o
+	$(OBJ_DIR)/raycasting.o \
+	$(OBJ_DIR)/clean.o
 all: libs $(NAME)
 	
 # Compila o recompila la libft
