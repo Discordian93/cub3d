@@ -6,14 +6,14 @@
 /*   By: yuliano <yuliano@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/15 13:14:33 by yuliano           #+#    #+#             */
-/*   Updated: 2025/11/18 20:23:02 by yuliano          ###   ########.fr       */
+/*   Updated: 2025/11/22 12:46:48 by yuliano          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "cub3D.h"
 
 
-int get_tex_color(t_img *tex, int tx, int ty)
+/*int get_tex_color(t_img *tex, int tx, int ty)
 {
     char            *pix;
     unsigned int    color;
@@ -22,7 +22,38 @@ int get_tex_color(t_img *tex, int tx, int ty)
         + tx * (tex->bpp / 8));
     color = *(unsigned int *)pix;
     return ((int)color);
+}*/
+
+int	get_tex_color(t_img *tex, int tx, int ty)
+{
+	char			*pix;
+	unsigned char	r;
+	unsigned char	g;
+	unsigned char	b;
+	unsigned int	color;
+
+	pix = tex->addr + (ty * tex->line_len
+			+ tx * (tex->bpp / 8));
+
+	/* ------------------------------------------------------------------ */
+	/* ANTES:                                                              */
+	/* color = *(unsigned int *)pix;                                      */
+	/* Esto coge los 4 bytes tal cual están (BGRA en memoria) y los       */
+	/* interpreta como un entero según el endian de la CPU (ARGB),        */
+	/* mientras que el resto del código trata 'color' como 0xRRGGBB.      */
+	/* Resultado: canales desordenados y artefactos de color en bordes.   */
+	/* ------------------------------------------------------------------ */
+
+	/* CAMBIO: reconstruimos el color a mano como 0xRRGGBB ignorando alpha,
+	   respetando el formato BGRA que usa minilibx en Linux. */
+	b = (unsigned char)pix[0];
+	g = (unsigned char)pix[1];
+	r = (unsigned char)pix[2];
+	color = (r << 16) | (g << 8) | b;
+
+	return ((int)color);
 }
+
 
 /* -------------------------------------------------------------------------- */
 /*  shade_from_dist                                                           */

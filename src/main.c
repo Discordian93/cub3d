@@ -6,7 +6,7 @@
 /*   By: yuliano <yuliano@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/04 21:20:22 by yuliano           #+#    #+#             */
-/*   Updated: 2025/11/19 23:09:36 by yuliano          ###   ########.fr       */
+/*   Updated: 2025/11/22 17:10:37 by yuliano          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,10 +46,10 @@ void	load_text(t_img text[num_tex], t_contex *context)
 {
 	int	i;
 
-	text[FACE_NO].name = "textures/rock.xpm";
-	text[FACE_SO].name = "textures/gray_wall.xpm";
-	text[FACE_EA].name = "textures/brick.xpm";
-	text[FACE_WE].name = "textures/Wolfenstein-Walls.xpm";
+	text[FACE_NO].name = "textures/brick_final.xpm";
+	text[FACE_SO].name = "textures/blue_wall.xpm";
+	text[FACE_EA].name = "textures/red_wall.xpm";
+	text[FACE_WE].name = "textures/gray_wall.xpm";
 	i = 0;
 	while (i < num_tex)
 	{
