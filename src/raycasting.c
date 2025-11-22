@@ -6,7 +6,7 @@
 /*   By: yuliano <yuliano@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/08 19:24:37 by yuliano           #+#    #+#             */
-/*   Updated: 2025/11/22 17:27:28 by yuliano          ###   ########.fr       */
+/*   Updated: 2025/11/22 18:08:18 by yuliano          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -270,7 +270,7 @@ void    render_frame(t_contex *contex)
         if (wall_x < 0.0)
             wall_x = 0.0;
         if (wall_x >= 1.0)
-            wall_x = 0.999999;
+            wall_x = 1.0;
 
         contex->pl->tex_x_rel = wall_x;
 
