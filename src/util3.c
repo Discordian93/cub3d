@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   util3.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: yuliano <yuliano@student.42.fr>            +#+  +:+       +#+        */
+/*   By: ypacileo <ypacileo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/15 13:14:33 by yuliano           #+#    #+#             */
-/*   Updated: 2025/11/22 17:55:32 by yuliano          ###   ########.fr       */
+/*   Updated: 2025/11/23 16:46:38 by ypacileo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,8 +70,8 @@ double  shade_from_dist(double corr)
     k = 1.0 - (corr * 0.02);
     if (k > 1.0)
         k = 1.0;
-    if (k < 0.40)
-        k = 0.40;
+    if (k < 0.60)
+        k = 0.60;
     return (k);
 }
 

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: yuliano <yuliano@student.42.fr>            +#+  +:+       +#+        */
+/*   By: ypacileo <ypacileo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/04 21:20:22 by yuliano           #+#    #+#             */
-/*   Updated: 2025/11/22 17:53:51 by yuliano          ###   ########.fr       */
+/*   Updated: 2025/11/23 17:44:47 by ypacileo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -115,7 +115,8 @@ int	main(int argc, char **argv)
 	contex->proj_dist = (WIDTH / 2.0) / tan(FOV_RAD / 2.0);
 	mlx_loop_hook(contex->mlx, &loop_hook, contex);
 	/* KeyPress o KeyRelease según prefieras */
-	mlx_hook(contex->win, 3, 1L << 1, handle_keypress, contex);
+	mlx_hook(contex->win, 2, 1L << 0, handle_keypress, contex);      // KeyPress
+	mlx_hook(contex->win, 3, 1L << 1, handle_keypress, contex); 
 	mlx_hook(contex->win, 17, 0, handle_destroy, contex);
 	mlx_loop(contex->mlx);
 	return (0);

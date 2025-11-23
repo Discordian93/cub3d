@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   cub3D.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: yuliano <yuliano@student.42.fr>            +#+  +:+       +#+        */
+/*   By: ypacileo <ypacileo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/01 17:03:53 by ypacileo          #+#    #+#             */
-/*   Updated: 2025/11/19 23:10:13 by yuliano          ###   ########.fr       */
+/*   Updated: 2025/11/23 17:45:10 by ypacileo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,8 +23,8 @@
 #include "libft.h"
 
 
-# define WIDTH   1000           // Ancho de la ventana en píxeles
-# define HEIGHT  600        // Alto de la ventana en píxeles
+# define WIDTH   2000           // Ancho de la ventana en píxeles
+# define HEIGHT  1200       // Alto de la ventana en píxeles
 # define KEY_LEFT   65363
 # define KEY_RIGHT  65361
 # define KEY_ESC 65307
@@ -126,7 +126,10 @@ double	degrees_to_radians(double degrees);
 double	calc_max_dist(int width, int height);
 int		map_is_wall(t_map *map, int mx, int my);
 void	find_player(t_player *pl, t_map *map);
-double cast_ray(double ax, t_player *pl, t_map *map);
+//double cast_ray(double ax, t_player *pl, t_map *map);
+//double	cast_ray(double ax, t_player *pl, t_map *map, t_contex *c);
+
+double	cast_ray(double ax, t_contex *contex);
 //void	draw_column(t_contex *contex, int x, double wall_h, int wall_rgb);
 void	render_frame(t_contex *app);
 int		loop_hook(t_contex *app);
