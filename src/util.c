@@ -105,48 +105,7 @@ void	move_player(t_player *pl, t_map *map, double move_x, double move_y)
 	}
 }
 
-/*
-** Movimiento y rotación. ESC libera todo y sale.
-*/
 
-/*
-int	handle_keypress(int keycode, t_contex *contex)
-{
-	double	step;
-
-	step = 0.25;
-	if (keycode == KEY_ESC)
-	{
-		ft_clean(contex);
-		exit(0);
-	}
-	else if (keycode == KEY_LEFT)
-		contex->pl->dir = normalize_angle(contex->pl->dir + step);
-	else if (keycode == KEY_RIGHT)
-		contex->pl->dir = normalize_angle(contex->pl->dir - step);
-	else if (keycode == KEY_W)
-		move_player(contex->pl, contex->map_g,
-			cos(contex->pl->dir) * MOVE_SPEED,
-			sin(contex->pl->dir) * MOVE_SPEED);
-	else if (keycode == KEY_S)
-		move_player(contex->pl, contex->map_g,
-			cos(contex->pl->dir) * -MOVE_SPEED,
-			sin(contex->pl->dir) * -MOVE_SPEED);
-	else if (keycode == KEY_A)
-		move_player(contex->pl, contex->map_g,
-			cos(contex->pl->dir - M_PI / 2.0) * MOVE_SPEED,
-			sin(contex->pl->dir - M_PI / 2.0) * MOVE_SPEED);
-	else if (keycode == KEY_D)
-		move_player(contex->pl, contex->map_g,
-			cos(contex->pl->dir + M_PI / 2.0) * MOVE_SPEED,
-			sin(contex->pl->dir + M_PI / 2.0) * MOVE_SPEED);
-	printf("dir = %.2f rad (%.1f°) | pos = (%.2f, %.2f)\n",
-		contex->pl->dir,
-		contex->pl->dir * 180.0 / M_PI,
-		contex->pl->x, contex->pl->y);
-	return (0);
-}
-*/
 
 int	handle_keypress(int keycode, t_contex *contex)
 {

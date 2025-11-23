@@ -1,28 +1,38 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   util3.c                                            :+:      :+:    :+:   */
+/*   util1.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: ypacileo <ypacileo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/11/15 13:14:33 by yuliano           #+#    #+#             */
-/*   Updated: 2025/11/23 16:46:38 by ypacileo         ###   ########.fr       */
+/*   Created: 2025/11/01 17:11:34 by ypacileo          #+#    #+#             */
+/*   Updated: 2025/11/23 18:48:14 by ypacileo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "cub3D.h"
 
 
-/*int get_tex_color(t_img *tex, int tx, int ty)
-{
-    char            *pix;
-    unsigned int    color;
 
-    pix = tex->addr + (ty * tex->line_len
-        + tx * (tex->bpp / 8));
-    color = *(unsigned int *)pix;
-    return ((int)color);
-}*/
+/* -------------------------------------------------------------------------- */
+/*  put_px                                                                    */
+/*  Objetivo: Escribir un color **RGB** (0xRRGGBB) en el píxel (x,y) del      */
+/*            framebuffer, siempre que esté dentro de la ventana.             */
+/* -------------------------------------------------------------------------- */
+void put_px(t_img *img, int x, int y, int rgb)
+{
+    char *dst;                                 // Puntero destino dentro del buffer
+
+    if (x < 0 || x >= WIDTH || y < 0 || y >= HEIGHT)
+        return;                                // Si (x,y) cae fuera de pantalla, no dibujamos
+    dst = img->addr + (y * img->line_len       // Avanza 'y' filas completas (bytes)
+                       + x * (img->bpp / 8));  // Avanza 'x' píxeles dentro de la fila (bytes)
+    *(unsigned int *)dst = (unsigned int)rgb;  // Escribe 0xRRGGBB en el buffer (MLX usa 32 bpp)
+}
+
+
+
+
 
 int	get_tex_color(t_img *tex, int tx, int ty)
 {
@@ -99,22 +109,3 @@ int apply_shade(int color, double shade)
 }
 
 
-/*
-t_img *select_texture(t_contex *c, double dirx, double diry)
-{
-    if (c->pl->side == 0)
-    {
-        if (dirx > 0)
-            return (c->tex_we);
-        else
-            return (c->tex_ea);
-    }
-    else
-    {
-        if (diry > 0)
-            return (c->tex_nort);
-        else
-            return (c->tex_so);
-    }
-}
-*/
