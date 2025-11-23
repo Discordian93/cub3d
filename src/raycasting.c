@@ -6,7 +6,7 @@
 /*   By: ypacileo <ypacileo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/08 19:24:37 by yuliano           #+#    #+#             */
-/*   Updated: 2025/11/23 18:14:15 by ypacileo         ###   ########.fr       */
+/*   Updated: 2025/11/23 18:36:08 by ypacileo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -279,7 +279,7 @@ void	render_frame(t_contex *contex)
 		   y rellena hit_x, hit_y y face en contex->pl */
 		contex->pl->dist = cast_ray(ray_ang, contex);
 
-		/* Distancia corregida = perpendicular (ya no hay fish-eye) */
+	
 		contex->pl->corr = contex->pl->dist * cos(ray_ang - contex->pl->dir);
 		contex->pl->wall_h = (TILE_SZ * contex->proj_dist)
 			/ (contex->pl->corr + EPS);
