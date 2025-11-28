@@ -3,116 +3,98 @@
 /*                                                        :::      ::::::::   */
 /*   ft_split.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ypacileo <ypacileo@student.42.fr>          +#+  +:+       +#+        */
+/*   By: student <student@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/06/23 13:20:36 by ypacileo          #+#    #+#             */
-/*   Updated: 2024/07/13 13:11:45 by ypacileo         ###   ########.fr       */
+/*   Created: 2024/01/01 00:00:00 by student           #+#    #+#             */
+/*   Updated: 2024/01/01 00:00:00 by student          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
-#include <stdlib.h>
 
-// Función para contar las subcadenas
-static size_t	ft_count_substr(char const *s, char c)
+static int	word_count(char const *s, char c)
 {
-	size_t	count;
-	size_t	i;
+	int	state;
+	int	wcount;
 
-	i = 0;
-	count = 0;
-	while (s[i])
+	state = 0;
+	wcount = 0;
+	while (*s != '\0')
 	{
-		if (s[i] != c)
+		if (*s != c && state == 0)
 		{
-			count++;
-			while (s[i] != c && s[i])
-				i++;
+			state = 1;
+			wcount++;
 		}
-		else
-		{
-			i++;
-		}
+		else if (*s == c)
+			state = 0;
+		s++;
 	}
-	return (count);
+	return (wcount);
 }
 
-// Función para liberar memoria
-static void	ft_free_dou_array(char **array, int i)
+static char	*extract_word(char const *s, char c)
 {
-	while (i >= 0)
-	{
-		free(array[i]);
-		i--;
-	}
-	free(array);
-}
+	int		len;
+	char	*word;
+	int		i;
 
-// Función para llenar el array con las subcadenas
-static char	**ft_fill(char const *s, char c, char **array, int count)
-{
-	int	i;
-	int	start;
-	int	end;
-
+	len = 0;
+	while (s[len] != c && s[len] != '\0')
+		len++;
+	word = (char *)malloc(sizeof(char) * (len + 1));
+	if (word == NULL)
+		return (NULL);
 	i = 0;
-	end = 0;
-	while (i < count)
+	while (i < len)
 	{
-		start = end;
-		while (s[start] == c)
-			start++;
-		end = start;
-		while (s[end] != c && s[end])
-			end++;
-		array[i] = ft_substr(s, start, (end - start));
-		if (array[i] == NULL)
-		{
-			ft_free_dou_array(array, i - 1);
-			return (NULL);
-		}
+		word[i] = s[i];
 		i++;
 	}
-	array[i] = NULL;
-	return (array);
+	word[i] = '\0';
+	return (word);
 }
 
-// Función principal
+static char const	*next_word_start(char const *s, char c)
+{
+	while (*s != c && *s != '\0')
+		s++;
+	while (*s == c && *s != '\0')
+		s++;
+	return (s);
+}
+
+static void	free_words(char **words, int word_ind)
+{
+	while (word_ind >= 0)
+	{
+		free(words[word_ind]);
+		word_ind--;
+	}
+	free(words);
+}
+
 char	**ft_split(char const *s, char c)
 {
-	char	**array;
-	size_t	count;
+	int		word_ind;
+	char	**words;
+	int		wc;
 
-	if (!s)
+	wc = word_count(s, c);
+	words = malloc(sizeof(char *) * (wc + 1));
+	if (words == NULL)
 		return (NULL);
-	count = ft_count_substr(s, c);
-	array = (char **)malloc((count + 1) * sizeof(char *));
-	if (!array)
-		return (NULL);
-	if (!ft_fill(s, c, array, count))
+	word_ind = 0;
+	if (*s == c)
+		s = next_word_start(s, c);
+	while (*s != '\0')
 	{
-		return (NULL);
+		words[word_ind] = extract_word(s, c);
+		if (words[word_ind] == NULL)
+			return (free_words(words, word_ind - 1), NULL);
+		s = next_word_start(s, c);
+		word_ind++;
 	}
-	return (array);
+	words[word_ind] = NULL;
+	return (words);
 }
-
-/*	#include <stdio.h>
- int  main(void)
-{
-   char    *s = "   cara de culo";
-   char    c = ' ';
-   size_t  count;
-   char    **tab = ft_split(s, c);
-   size_t  i;
-
-
-   i = 0;
-   count = ft_count_substr(s, c);
-   printf("s[0]: %c\n", s[0]);
-   printf("COUNT en main: %zu\n", count);
-   while (i < count)
-   {
-       printf("%s\n", tab[i]);
-       i++;
-   }
-}*/

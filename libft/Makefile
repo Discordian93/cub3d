@@ -1,42 +1,49 @@
 # **************************************************************************** #
 #                                                                              #
-#                                                         :::      ::::::::    #
-#    Makefile                                           :+:      :+:    :+:    #
-#                                                     +:+ +:+         +:+      #
-#    By: yuliano <yuliano@student.42.fr>            +#+  +:+       +#+         #
-#                                                 +#+#+#+#+#+   +#+            #
-#    Created: 2024/05/26 14:52:38 by ypacileo          #+#    #+#              #
-#    Updated: 2025/03/05 06:29:01 by yuliano          ###   ########.fr        #
+#                                                         :::      ::::::::   #
+#    Makefile                                           :+:      :+:    :+:   #
+#                                                     +:+ +:+         +:+     #
+#    By: student <student@42.fr>                    +#+  +:+       +#+        #
+#                                                 +#+#+#+#+#+   +#+           #
+#    Created: 2024/01/01 00:00:00 by student           #+#    #+#             #
+#    Updated: 2024/01/01 00:00:00 by student          ###   ########.fr       #
 #                                                                              #
 # **************************************************************************** #
 
 NAME = libft.a
-LIB = ar rcs
+
+CC = gcc
 CFLAGS = -Wall -Wextra -Werror
-RM = rm -rf
-OBJ = ft_atoi.o ft_bzero.o ft_calloc.o ft_isalnum.o ft_isalpha.o\
-ft_isascii.o ft_isdigit.o ft_isprint.o ft_itoa.o ft_memchr.o\
-ft_memcmp.o ft_memcpy.o ft_memmove.o ft_memset.o ft_putchar_fd.o\
-ft_putendl_fd.o ft_putnbr_fd.o ft_putstr_fd.o ft_split.o ft_strampi.o\
-ft_strchr.o ft_strdup.o ft_striteri.o ft_strjoin.o ft_strlcat.o\
-ft_strlcpy.o ft_strlen.o ft_strncmp.o ft_strnstr.o ft_strrchr.o\
-ft_strtrim.o ft_substr.o ft_tolower.o ft_toupper.o get_next_line_utils.o\
-get_next_line.o
-INCLUDE = libft.h
+
+SRCS = ft_strlen.c \
+       ft_strdup.c \
+       ft_strncmp.c \
+       ft_strchr.c \
+       ft_strlcpy.c \
+       ft_atoi.c \
+       ft_bzero.c \
+       ft_calloc.c \
+       ft_putstr_fd.c \
+       ft_putchar_fd.c \
+       ft_split.c \
+       get_next_line.c
+
+OBJS = $(SRCS:.c=.o)
+
 all: $(NAME)
 
-$(NAME) : $(OBJ) $(INCLUDE)
-	$(LIB) $(NAME) $(OBJ)
+$(NAME): $(OBJS)
+	ar rcs $(NAME) $(OBJS)
 
-%.o : %.c
-	gcc  -c  $(CFLAGS) $< -o $@
+%.o: %.c libft.h
+	$(CC) $(CFLAGS) -c $< -o $@
 
-clean :
-	${RM} ${OBJ}
+clean:
+	rm -f $(OBJS)
 
-fclean : clean
-	${RM} ${NAME}
+fclean: clean
+	rm -f $(NAME)
 
-re : fclean all
+re: fclean all
 
 .PHONY: all clean fclean re
