@@ -44,11 +44,14 @@ char	*ft_strtrim_free(char *s1, const char *set)
 	return (result);
 }
 
-void	parse_error(const char *msg, char *line)
+void	parse_error(const char *msg, t_contex *ctx, t_mapdata *data)
 {
-	(void)line;
 	ft_putstr_fd("Error\n", 2);
 	ft_putstr_fd((char *)msg, 2);
 	ft_putstr_fd("\n", 2);
+	if (data)
+		free_mapdata(data);
+	if (ctx)
+		ft_clean(ctx);
 	exit(EXIT_FAILURE);
 }

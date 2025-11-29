@@ -34,7 +34,7 @@ int	open_cub_file(const char *filename)
 	return (fd);
 }
 
-static int	parse_loop(int fd, t_config *cfg, t_mapdata *d, int *state)
+static int	parse_loop(int fd, t_contex *ctx, t_mapdata *d, int *state)
 {
 	char	*line;
 	int		cap;
@@ -46,7 +46,7 @@ static int	parse_loop(int fd, t_config *cfg, t_mapdata *d, int *state)
 	while (line != NULL)
 	{
 		if (*state == 0)
-			process_element(line, cfg, d, state);
+			process_element(line, ctx, d, state);
 		else
 		{
 			if (!process_map_line(d, line, &cap, &found_empty))
@@ -58,10 +58,10 @@ static int	parse_loop(int fd, t_config *cfg, t_mapdata *d, int *state)
 	return (1);
 }
 
-int	parse_elements(int fd, t_config *config, t_mapdata *data)
+int	parse_elements(int fd, t_contex *contex, t_mapdata *data)
 {
 	int	state;
 
 	state = 0;
-	return (parse_loop(fd, config, data, &state));
+	return (parse_loop(fd, contex, data, &state));
 }

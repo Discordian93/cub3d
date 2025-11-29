@@ -1,4 +1,4 @@
-NO ./textures/north.xpm
+ju ./textures/north.xpm
 SO ./textures/brick.xpm
 WE ./textures/rock_wall.xpm
 EA ./textures/blue_wall.xpm

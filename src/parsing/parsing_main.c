@@ -34,7 +34,7 @@ static void	init_mapdata(t_mapdata *data)
 	data->width = 0;
 }
 
-static void	free_mapdata(t_mapdata *data)
+void	free_mapdata(t_mapdata *data)
 {
 	int	i;
 
@@ -57,7 +57,7 @@ void	parse_cub_file(const char *filename, t_contex *contex)
 
 	fd = open_cub_file(filename);
 	init_mapdata(&data);
-	if (!parse_elements(fd, contex->config, &data))
+	if (!parse_elements(fd, contex, &data))
 	{
 		free_mapdata(&data);
 		close(fd);

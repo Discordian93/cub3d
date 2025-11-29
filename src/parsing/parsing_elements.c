@@ -52,7 +52,7 @@ int	parse_element_line(const char *line, t_config *config)
 	return (0);
 }
 
-void	process_element(char *line, t_config *cfg, t_mapdata *d, int *state)
+void	process_element(char *line, t_contex *ctx, t_mapdata *d, int *state)
 {
 	char	*trimmed;
 
@@ -66,8 +66,11 @@ void	process_element(char *line, t_config *cfg, t_mapdata *d, int *state)
 	}
 	if (is_element_line(trimmed))
 	{
-		if (!parse_element_line(trimmed, cfg))
-			parse_error("Invalid element", line);
+		if (!parse_element_line(trimmed, ctx->config))
+		{
+			free(trimmed);
+			parse_error("Invalid element", ctx, d);
+		}
 	}
 	else if (is_map_line(trimmed))
 	{
@@ -75,7 +78,10 @@ void	process_element(char *line, t_config *cfg, t_mapdata *d, int *state)
 		handle_map_start(line, d);
 	}
 	else
-		parse_error("Unknown element", line);
+	{
+		free(trimmed);
+		parse_error("Unknown element", ctx, d);
+	}
 	free(trimmed);
 }
 

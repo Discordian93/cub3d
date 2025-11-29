@@ -27,8 +27,8 @@ void	parse_cub_file(const char *filename, t_contex *contex);
 
 /* ======================== File Parsing ================================== */
 int		open_cub_file(const char *filename);
-int		parse_elements(int fd, t_config *config, t_mapdata *data);
-void	process_element(char *line, t_config *cfg, t_mapdata *d, int *state);
+int		parse_elements(int fd, t_contex *contex, t_mapdata *data);
+void	process_element(char *line, t_contex *ctx, t_mapdata *d, int *state);
 int		handle_map_start(char *line, t_mapdata *data);
 
 /* ======================== Element Parsing =============================== */
@@ -47,6 +47,7 @@ int		count_color_parts(char **parts);
 void	free_color_parts(char **parts);
 
 /* ======================== Map Parsing =================================== */
+void	free_mapdata(t_mapdata *data);
 int		is_map_line(const char *line);
 int		add_map_line(t_mapdata *data, char *line, int *cap);
 int		grow_map_array(t_mapdata *data, int *capacity);
@@ -72,6 +73,6 @@ char	*ft_strtrim_free(char *s1, const char *set);
 int		is_empty_line(const char *line);
 void	skip_spaces(const char **str);
 int		ft_isspace(char c);
-void	parse_error(const char *msg, char *line);
+void	parse_error(const char *msg, t_contex *ctx, t_mapdata *data);
 
 #endif
