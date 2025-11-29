@@ -25,6 +25,17 @@ int	is_texture_identifier(const char *line)
 	return (0);
 }
 
+int	validate_path(char *path)
+{
+	char	*firstdot;
+
+	firstdot = ft_strchr(path, '.');
+	if (!firstdot || ft_strlen(path) == ft_strlen(firstdot)
+		|| ft_strlen(firstdot) != 4 || ft_strncmp(firstdot, ".xpm", 4) != 0)
+		return (0);
+	return (1);
+}
+
 int	parse_texture(const char *line, char **dest)
 {
 	char	*path;
@@ -38,7 +49,7 @@ int	parse_texture(const char *line, char **dest)
 	while (*line && ft_isspace(*line))
 		line++;
 	path = ft_strdup(line);
-	if (!path)
+	if (!path || validate_path(path))
 		return (0);
 	trimmed = ft_strtrim(path, " \t\n\r");
 	free(path);
