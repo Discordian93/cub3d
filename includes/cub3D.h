@@ -119,7 +119,6 @@ typedef struct s_column
 	int		tex_x;
 }	t_column;
 
-
 typedef struct s_ray
 {
 	double	pos_x;
