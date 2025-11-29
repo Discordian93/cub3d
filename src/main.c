@@ -3,33 +3,67 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: student <student@42.fr>                    +#+  +:+       +#+        */
+/*   By: student <student@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/01/01 00:00:00 by student           #+#    #+#             */
-/*   Updated: 2024/01/01 00:00:00 by student          ###   ########.fr       */
+/*   Created: 2025/01/01 00:00:00 by student           #+#    #+#             */
+/*   Updated: 2025/01/01 00:00:00 by student          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "cub3D.h"
+#include "parsing.h"
+
+static void	init_mlx_window(t_contex *contex)
+{
+	contex->mlx = mlx_init();
+	if (contex->mlx == NULL)
+	{
+		ft_clean(contex);
+		ft_error("Error initializing mlx\n");
+	}
+	contex->win = mlx_new_window(contex->mlx, WIDTH, HEIGHT, "Cub3D");
+	if (contex->win == NULL)
+	{
+		ft_clean(contex);
+		ft_error("Error initializing window\n");
+	}
+}
+
+static void	init_framebuffer(t_contex *contex)
+{
+	contex->img->ptr = mlx_new_image(contex->mlx, WIDTH, HEIGHT);
+	if (contex->img->ptr == NULL)
+	{
+		ft_clean(contex);
+		ft_error("Error creating image\n");
+	}
+	contex->img->addr = mlx_get_data_addr(contex->img->ptr,
+			&contex->img->bpp,
+			&contex->img->line_len,
+			&contex->img->endian);
+}
+
+static void	setup_hooks(t_contex *contex)
+{
+	mlx_loop_hook(contex->mlx, &loop_hook, contex);
+	mlx_hook(contex->win, 2, 1L << 0, handle_keypress, contex);
+	mlx_hook(contex->win, 17, 0, handle_destroy, contex);
+}
 
 int	main(int argc, char **argv)
 {
-	t_game	game;
+	t_contex	*contex;
 
 	if (argc != 2)
-	{
-		ft_putstr_fd("Error\nUsage: ./cub3D <map.cub>\n", 2);
-		return (1);
-	}
-	if (init_game(&game, argv[1]))
-	{
-		cleanup_game(&game);
-		return (1);
-	}
-	mlx_hook(game.win, 2, 1L << 0, handle_keypress, &game);
-	mlx_hook(game.win, 17, 0, handle_close, &game);
-	mlx_loop_hook(game.mlx, loop_hook, &game);
-	mlx_loop(game.mlx);
-	cleanup_game(&game);
+		ft_error("Usage: ./cub3D <map.cub>\n");
+	init_contex(&contex);
+	parse_cub_file(argv[1], contex);
+	init_mlx_window(contex);
+	init_framebuffer(contex);
+	load_textures(contex);
+	find_player(contex->pl, contex->map_g);
+	contex->proj_dist = (WIDTH / 2.0) / tan(FOV_RAD / 2.0);
+	setup_hooks(contex);
+	mlx_loop(contex->mlx);
 	return (0);
 }

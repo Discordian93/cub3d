@@ -3,84 +3,130 @@
 /*                                                        :::      ::::::::   */
 /*   raycasting.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: student <student@42.fr>                    +#+  +:+       +#+        */
+/*   By: student <student@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/01/01 00:00:00 by student           #+#    #+#             */
-/*   Updated: 2024/01/01 00:00:00 by student          ###   ########.fr       */
+/*   Created: 2025/01/01 00:00:00 by student           #+#    #+#             */
+/*   Updated: 2025/01/01 00:00:00 by student          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "cub3D.h"
 
-static void	set_wall_side(t_raycast *rc, double dx, double dy)
+typedef struct s_ray
 {
-	if (fabs(dx) > fabs(dy))
+	double	pos_x;
+	double	pos_y;
+	double	dir_x;
+	double	dir_y;
+	double	delta_x;
+	double	delta_y;
+	double	side_x;
+	double	side_y;
+	int		map_x;
+	int		map_y;
+	int		step_x;
+	int		step_y;
+	int		side;
+}	t_ray;
+
+static void	init_ray(t_ray *r, double ax, t_player *pl)
+{
+	r->pos_x = pl->x;
+	r->pos_y = pl->y;
+	r->dir_x = cos(ax);
+	r->dir_y = sin(ax);
+	r->map_x = (int)r->pos_x;
+	r->map_y = (int)r->pos_y;
+	if (r->dir_x == 0)
+		r->delta_x = 1e30;
+	else
+		r->delta_x = fabs(1.0 / r->dir_x);
+	if (r->dir_y == 0)
+		r->delta_y = 1e30;
+	else
+		r->delta_y = fabs(1.0 / r->dir_y);
+}
+
+static void	calc_step_dist(t_ray *r)
+{
+	if (r->dir_x < 0)
 	{
-		if (dx > 0)
-			rc->side = 0;
-		else
-			rc->side = 1;
+		r->step_x = -1;
+		r->side_x = (r->pos_x - r->map_x) * r->delta_x;
 	}
 	else
 	{
-		if (dy > 0)
-			rc->side = 3;
-		else
-			rc->side = 2;
+		r->step_x = 1;
+		r->side_x = ((r->map_x + 1.0) - r->pos_x) * r->delta_x;
+	}
+	if (r->dir_y < 0)
+	{
+		r->step_y = -1;
+		r->side_y = (r->pos_y - r->map_y) * r->delta_y;
+	}
+	else
+	{
+		r->step_y = 1;
+		r->side_y = ((r->map_y + 1.0) - r->pos_y) * r->delta_y;
 	}
 }
 
-static void	set_wall_x(t_raycast *rc, double rx, double ry)
+static void	perform_dda(t_ray *r, t_map *map)
 {
-	if (rc->side == 0 || rc->side == 1)
-		rc->wall_x = ry - floor(ry);
-	else
-		rc->wall_x = rx - floor(rx);
-}
+	int	hit;
 
-double	cast_ray(t_game *game, double angle, t_raycast *rc)
-{
-	double	rx;
-	double	ry;
-	double	delta[2];
-
-	rx = game->player.x;
-	ry = game->player.y;
-	delta[0] = cos(angle) * STEP;
-	delta[1] = sin(angle) * STEP;
-	rc->dist = 0.0;
-	while (rc->dist < 64.0)
+	hit = 0;
+	while (!hit)
 	{
-		rx += delta[0];
-		ry += delta[1];
-		rc->dist += STEP;
-		if (is_wall(game, rx, ry))
+		if (r->side_x < r->side_y)
 		{
-			set_wall_side(rc, delta[0], delta[1]);
-			set_wall_x(rc, rx, ry);
-			return (rc->dist);
+			r->side_x += r->delta_x;
+			r->map_x += r->step_x;
+			r->side = 0;
 		}
+		else
+		{
+			r->side_y += r->delta_y;
+			r->map_y += r->step_y;
+			r->side = 1;
+		}
+		if (map_is_wall(map, r->map_x, r->map_y))
+			hit = 1;
 	}
-	return (rc->dist);
 }
 
-void	render_frame(t_game *game)
+static void	set_face(t_player *pl, t_ray *r)
 {
-	int			x;
-	double		ray_angle;
-	double		corrected_dist;
-	double		wall_h;
-	t_raycast	rc;
-
-	x = 0;
-	while (x < WIDTH)
+	if (r->side == 0)
 	{
-		ray_angle = game->player.dir
-			+ atan(((double)x - WIDTH / 2.0) / game->proj_dist);
-		cast_ray(game, ray_angle, &rc);
-		corrected_dist = rc.dist * cos(ray_angle - game->player.dir);
-		wall_h = (TILE_SZ * game->proj_dist) / (corrected_dist + EPS);
-		draw_column(game, x, wall_h, &rc);
-		x++;
+		if (r->dir_x > 0)
+			pl->face = FACE_WE;
+		else
+			pl->face = FACE_EA;
 	}
+	else
+	{
+		if (r->dir_y > 0)
+			pl->face = FACE_NO;
+		else
+			pl->face = FACE_SO;
+	}
+}
+
+double	cast_ray(double ax, t_contex *contex)
+{
+	t_ray	r;
+	double	dist;
+
+	init_ray(&r, ax, contex->pl);
+	calc_step_dist(&r);
+	perform_dda(&r, contex->map_g);
+	if (r.side == 0)
+		dist = (r.map_x - r.pos_x + (1 - r.step_x) / 2.0) / r.dir_x;
+	else
+		dist = (r.map_y - r.pos_y + (1 - r.step_y) / 2.0) / r.dir_y;
+	contex->pl->hit_x = r.pos_x + r.dir_x * dist;
+	contex->pl->hit_y = r.pos_y + r.dir_y * dist;
+	set_face(contex->pl, &r);
+	return (dist);
 }

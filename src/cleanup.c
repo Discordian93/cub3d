@@ -3,41 +3,76 @@
 /*                                                        :::      ::::::::   */
 /*   cleanup.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: student <student@42.fr>                    +#+  +:+       +#+        */
+/*   By: student <student@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/01/01 00:00:00 by student           #+#    #+#             */
-/*   Updated: 2024/01/01 00:00:00 by student          ###   ########.fr       */
+/*   Created: 2025/01/01 00:00:00 by student           #+#    #+#             */
+/*   Updated: 2025/01/01 00:00:00 by student          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "cub3D.h"
 
-static void	destroy_texture(void *mlx, t_img *img)
+void	ft_error(const char *msg)
 {
-	if (img->ptr)
-		mlx_destroy_image(mlx, img->ptr);
-	img->ptr = NULL;
+	ft_putstr_fd("Error\n", 2);
+	ft_putstr_fd((char *)msg, 2);
+	exit(EXIT_FAILURE);
 }
 
-static void	destroy_all_textures(t_game *game)
+void	free_config(t_config *config)
 {
-	destroy_texture(game->mlx, &game->textures.north);
-	destroy_texture(game->mlx, &game->textures.south);
-	destroy_texture(game->mlx, &game->textures.east);
-	destroy_texture(game->mlx, &game->textures.west);
+	if (config == NULL)
+		return ;
+	if (config->no_texture)
+		free(config->no_texture);
+	if (config->so_texture)
+		free(config->so_texture);
+	if (config->ea_texture)
+		free(config->ea_texture);
+	if (config->we_texture)
+		free(config->we_texture);
+	free(config);
 }
 
-void	cleanup_game(t_game *game)
+void	free_map(t_map **map)
 {
-	if (game->mlx)
+	int	i;
+
+	if (map == NULL || *map == NULL)
+		return ;
+	if ((*map)->map != NULL)
 	{
-		destroy_all_textures(game);
-		if (game->frame.ptr)
-			mlx_destroy_image(game->mlx, game->frame.ptr);
-		if (game->win)
-			mlx_destroy_window(game->mlx, game->win);
-		mlx_destroy_display(game->mlx);
-		free(game->mlx);
+		i = 0;
+		while (i < (*map)->height)
+		{
+			free((*map)->map[i]);
+			i++;
+		}
+		free((*map)->map);
+		(*map)->map = NULL;
 	}
-	free_mapdata(&game->mapdata);
+	free(*map);
+	*map = NULL;
+}
+
+void	ft_free_contex(t_contex *context)
+{
+	if (context == NULL)
+		return ;
+	if (context->pl != NULL)
+	{
+		free(context->pl);
+		context->pl = NULL;
+	}
+	if (context->img != NULL)
+	{
+		free(context->img);
+		context->img = NULL;
+	}
+	if (context->config != NULL)
+		free_config(context->config);
+	context->config = NULL;
+	if (context->map_g != NULL)
+		free_map(&context->map_g);
+	free(context);
 }

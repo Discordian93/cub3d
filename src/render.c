@@ -3,75 +3,83 @@
 /*                                                        :::      ::::::::   */
 /*   render.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: student <student@42.fr>                    +#+  +:+       +#+        */
+/*   By: student <student@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/01/01 00:00:00 by student           #+#    #+#             */
-/*   Updated: 2024/01/01 00:00:00 by student          ###   ########.fr       */
+/*   Created: 2025/01/01 00:00:00 by student           #+#    #+#             */
+/*   Updated: 2025/01/01 00:00:00 by student          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "cub3D.h"
 
-int	get_texture_pixel(t_img *tex, int tex_x, int tex_y)
+typedef struct s_column
 {
-	char	*pixel;
+	int		y_top;
+	int		y_bot;
+	double	wall_h_real;
+	double	y_top_real;
+	int		tex_x;
+}	t_column;
 
-	if (tex_x < 0)
-		tex_x = 0;
-	if (tex_x >= tex->width)
-		tex_x = tex->width - 1;
-	if (tex_y < 0)
-		tex_y = 0;
-	if (tex_y >= tex->height)
-		tex_y = tex->height - 1;
-	pixel = tex->addr + (tex_y * tex->line_len + tex_x * (tex->bpp / 8));
-	return (*(unsigned int *)pixel);
+static void	init_column(t_column *col, t_contex *contex)
+{
+	col->wall_h_real = contex->pl->wall_h;
+	if (col->wall_h_real < 1.0)
+		col->wall_h_real = 1.0;
+	col->y_top_real = (HEIGHT - col->wall_h_real) * 0.5;
+	col->y_top = (int)col->y_top_real;
+	if (col->y_top < 0)
+		col->y_top = 0;
+	col->y_bot = (int)(col->y_top_real + col->wall_h_real);
+	if (col->y_bot > HEIGHT)
+		col->y_bot = HEIGHT;
+	col->tex_x = (int)(contex->pl->tex_x_rel * contex->selec_text.width);
+	if (col->tex_x < 0)
+		col->tex_x = 0;
+	if (col->tex_x >= contex->selec_text.width)
+		col->tex_x = contex->selec_text.width - 1;
 }
 
-t_img	*select_texture(t_game *game, int side)
+static void	draw_wall_stripe(t_contex *ctx, int x, t_column *col)
 {
-	if (side == 0)
-		return (&game->textures.east);
-	else if (side == 1)
-		return (&game->textures.west);
-	else if (side == 2)
-		return (&game->textures.north);
-	return (&game->textures.south);
-}
+	int		y;
+	int		tex_y;
+	double	rel;
+	int		color;
 
-static void	draw_ceiling_floor(t_game *game, int x, int *bounds)
-{
-	int	y;
-
-	y = 0;
-	while (y < bounds[0])
+	y = col->y_top;
+	while (y < col->y_bot)
 	{
-		put_pixel(&game->frame, x, y, game->ceiling_color);
+		rel = ((double)y - col->y_top_real) / col->wall_h_real;
+		tex_y = (int)(rel * ctx->selec_text.height);
+		if (tex_y < 0)
+			tex_y = 0;
+		if (tex_y >= ctx->selec_text.height)
+			tex_y = ctx->selec_text.height - 1;
+		color = get_tex_color(&ctx->selec_text, col->tex_x, tex_y);
+		color = apply_shade(color, ctx->pl->shade);
+		put_px(ctx->img, x, y, color);
 		y++;
 	}
-	y = bounds[1];
+}
+
+void	draw_column(t_contex *contex, int x)
+{
+	t_column	col;
+	int			y;
+
+	init_column(&col, contex);
+	y = 0;
+	while (y < col.y_top)
+	{
+		put_px(contex->img, x, y, contex->config->ceil_color);
+		y++;
+	}
+	draw_wall_stripe(contex, x, &col);
+	y = col.y_bot;
 	while (y < HEIGHT)
 	{
-		put_pixel(&game->frame, x, y, game->floor_color);
+		put_px(contex->img, x, y, contex->config->floor_color);
 		y++;
 	}
-}
-
-static void	init_draw_bounds(int *bounds, double wall_h)
-{
-	bounds[0] = (HEIGHT - (int)wall_h) / 2;
-	bounds[1] = (HEIGHT + (int)wall_h) / 2;
-	if (bounds[0] < 0)
-		bounds[0] = 0;
-	if (bounds[1] >= HEIGHT)
-		bounds[1] = HEIGHT - 1;
-}
-
-void	draw_column(t_game *game, int x, double wall_h, t_raycast *rc)
-{
-	int		bounds[2];
-
-	init_draw_bounds(bounds, wall_h);
-	draw_ceiling_floor(game, x, bounds);
-	draw_wall_stripe(game, x, bounds, rc);
 }

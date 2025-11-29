@@ -3,67 +3,78 @@
 /*                                                        :::      ::::::::   */
 /*   parsing_main.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: student <student@42.fr>                    +#+  +:+       +#+        */
+/*   By: student <student@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/01/01 00:00:00 by student           #+#    #+#             */
-/*   Updated: 2024/01/01 00:00:00 by student          ###   ########.fr       */
+/*   Created: 2025/01/01 00:00:00 by student           #+#    #+#             */
+/*   Updated: 2025/01/01 00:00:00 by student          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "parsing.h"
-#include "libft.h"
 
-int	validate_extension(const char *filename)
+static void	validate_config(t_config *config)
 {
-	int	len;
-
-	if (!filename)
-		return (parse_error("No filename provided"));
-	len = ft_strlen(filename);
-	if (len < 5)
-		return (parse_error("Invalid file extension (must be .cub)"));
-	if (ft_strncmp(filename + len - 4, ".cub", 4) != 0)
-		return (parse_error("Invalid file extension (must be .cub)"));
-	return (0);
+	if (!config->no_texture || !config->so_texture
+		|| !config->ea_texture || !config->we_texture)
+	{
+		ft_putstr_fd("Error\nMissing texture path\n", 2);
+		exit(EXIT_FAILURE);
+	}
+	if (!config->floor_set || !config->ceil_set)
+	{
+		ft_putstr_fd("Error\nMissing floor or ceiling color\n", 2);
+		exit(EXIT_FAILURE);
+	}
 }
 
-int	check_required_elements(t_mapdata *data)
+static void	init_mapdata(t_mapdata *data)
 {
-	if (!data->tex.north)
-		return (parse_error("Missing north texture (NO)"));
-	if (!data->tex.south)
-		return (parse_error("Missing south texture (SO)"));
-	if (!data->tex.west)
-		return (parse_error("Missing west texture (WE)"));
-	if (!data->tex.east)
-		return (parse_error("Missing east texture (EA)"));
-	if (!data->floor.is_set)
-		return (parse_error("Missing floor color (F)"));
-	if (!data->ceiling.is_set)
-		return (parse_error("Missing ceiling color (C)"));
-	return (0);
+	data->lines = NULL;
+	data->count = 0;
+	data->width = 0;
 }
 
-int	parse_cub_file(const char *filename, t_mapdata *data)
+static void	free_mapdata(t_mapdata *data)
 {
-	int		fd;
-	char	*first_map_line;
+	int	i;
 
-	init_mapdata(data);
-	if (validate_extension(filename))
-		return (1);
-	fd = open(filename, O_RDONLY);
-	if (fd < 0)
-		return (parse_error("Cannot open file"));
-	if (parse_elements(fd, data, &first_map_line))
-		return (close(fd), 1);
-	if (check_required_elements(data))
-		return (free(first_map_line), close(fd), 1);
-	if (parse_map_lines(fd, first_map_line, data))
-		return (free(first_map_line), close(fd), 1);
-	free(first_map_line);
+	if (data->lines)
+	{
+		i = 0;
+		while (i < data->count)
+		{
+			free(data->lines[i]);
+			i++;
+		}
+		free(data->lines);
+	}
+}
+
+void	parse_cub_file(const char *filename, t_contex *contex)
+{
+	int			fd;
+	t_mapdata	data;
+
+	fd = open_cub_file(filename);
+	init_mapdata(&data);
+	if (!parse_elements(fd, contex->config, &data))
+	{
+		free_mapdata(&data);
+		close(fd);
+		ft_clean(contex);
+		ft_error("Failed to parse file\n");
+	}
 	close(fd);
-	if (validate_map(data))
-		return (1);
-	return (0);
+	validate_config(contex->config);
+	contex->map_g = malloc(sizeof(t_map));
+	if (!contex->map_g)
+	{
+		free_mapdata(&data);
+		ft_clean(contex);
+		ft_error("Memory allocation failed\n");
+	}
+	ft_bzero(contex->map_g, sizeof(t_map));
+	build_map(&data, contex->map_g);
+	free_mapdata(&data);
+	validate_map(contex->map_g);
 }

@@ -3,73 +3,57 @@
 /*                                                        :::      ::::::::   */
 /*   init.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: student <student@42.fr>                    +#+  +:+       +#+        */
+/*   By: student <student@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/01/01 00:00:00 by student           #+#    #+#             */
-/*   Updated: 2024/01/01 00:00:00 by student          ###   ########.fr       */
+/*   Created: 2025/01/01 00:00:00 by student           #+#    #+#             */
+/*   Updated: 2025/01/01 00:00:00 by student          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "cub3D.h"
 
-static int	color_to_int(t_color *color)
+static void	init_player(t_contex *contex)
 {
-	return ((color->r << 16) | (color->g << 8) | color->b);
+	contex->pl = malloc(sizeof(t_player));
+	if (!contex->pl)
+	{
+		ft_free_contex(contex);
+		ft_error("Error allocating player\n");
+	}
+	ft_bzero(contex->pl, sizeof(t_player));
 }
 
-void	init_player(t_game *game)
+static void	init_image(t_contex *contex)
 {
-	game->player.x = game->mapdata.spawn.x + 0.5;
-	game->player.y = game->mapdata.spawn.y + 0.5;
-	if (game->mapdata.spawn.dir == 'N')
-		game->player.dir = -M_PI / 2;
-	else if (game->mapdata.spawn.dir == 'S')
-		game->player.dir = M_PI / 2;
-	else if (game->mapdata.spawn.dir == 'E')
-		game->player.dir = 0;
-	else if (game->mapdata.spawn.dir == 'W')
-		game->player.dir = M_PI;
+	contex->img = malloc(sizeof(t_img));
+	if (!contex->img)
+	{
+		ft_free_contex(contex);
+		ft_error("Error allocating image\n");
+	}
+	ft_bzero(contex->img, sizeof(t_img));
 }
 
-static int	init_frame(t_game *game)
+static void	init_config(t_contex *contex)
 {
-	game->frame.ptr = mlx_new_image(game->mlx, WIDTH, HEIGHT);
-	if (!game->frame.ptr)
-		return (1);
-	game->frame.addr = mlx_get_data_addr(game->frame.ptr,
-			&game->frame.bpp, &game->frame.line_len, &game->frame.endian);
-	if (!game->frame.addr)
-		return (1);
-	game->frame.width = WIDTH;
-	game->frame.height = HEIGHT;
-	return (0);
+	contex->config = malloc(sizeof(t_config));
+	if (!contex->config)
+	{
+		ft_free_contex(contex);
+		ft_error("Error allocating config\n");
+	}
+	ft_bzero(contex->config, sizeof(t_config));
+	contex->config->floor_color = -1;
+	contex->config->ceil_color = -1;
 }
 
-static int	init_mlx(t_game *game)
+void	init_contex(t_contex **contex)
 {
-	game->mlx = mlx_init();
-	if (!game->mlx)
-		return (parse_error("Failed to initialize MLX"));
-	game->win = mlx_new_window(game->mlx, WIDTH, HEIGHT, "cub3D");
-	if (!game->win)
-		return (parse_error("Failed to create window"));
-	if (init_frame(game))
-		return (1);
-	return (0);
-}
-
-int	init_game(t_game *game, char *map_file)
-{
-	ft_bzero(game, sizeof(t_game));
-	if (parse_cub_file(map_file, &game->mapdata))
-		return (1);
-	game->floor_color = color_to_int(&game->mapdata.floor);
-	game->ceiling_color = color_to_int(&game->mapdata.ceiling);
-	if (init_mlx(game))
-		return (1);
-	if (load_textures(game))
-		return (1);
-	init_player(game);
-	game->proj_dist = (WIDTH / 2.0) / tan(FOV_RAD / 2.0);
-	return (0);
+	*contex = malloc(sizeof(t_contex));
+	if (!(*contex))
+		ft_error("Error allocating context\n");
+	ft_bzero(*contex, sizeof(t_contex));
+	init_player(*contex);
+	init_image(*contex);
+	init_config(*contex);
 }

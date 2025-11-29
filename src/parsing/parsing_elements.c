@@ -3,40 +3,89 @@
 /*                                                        :::      ::::::::   */
 /*   parsing_elements.c                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: student <student@42.fr>                    +#+  +:+       +#+        */
+/*   By: student <student@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/01/01 00:00:00 by student           #+#    #+#             */
-/*   Updated: 2024/01/01 00:00:00 by student          ###   ########.fr       */
+/*   Created: 2025/01/01 00:00:00 by student           #+#    #+#             */
+/*   Updated: 2025/01/01 00:00:00 by student          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "parsing.h"
-#include "libft.h"
 
-int	all_elements_set(t_mapdata *data)
+int	is_element_line(const char *line)
 {
-	if (!data->tex.north || !data->tex.south)
-		return (0);
-	if (!data->tex.east || !data->tex.west)
-		return (0);
-	if (!data->floor.is_set || !data->ceiling.is_set)
-		return (0);
-	return (1);
+	while (*line && ft_isspace(*line))
+		line++;
+	if (ft_strncmp(line, "NO ", 3) == 0)
+		return (1);
+	if (ft_strncmp(line, "SO ", 3) == 0)
+		return (1);
+	if (ft_strncmp(line, "WE ", 3) == 0)
+		return (1);
+	if (ft_strncmp(line, "EA ", 3) == 0)
+		return (1);
+	if (ft_strncmp(line, "F ", 2) == 0)
+		return (1);
+	if (ft_strncmp(line, "C ", 2) == 0)
+		return (1);
+	return (0);
 }
 
-int	parse_element_line(char *line, t_mapdata *data)
+int	parse_element_line(const char *line, t_config *config)
+{
+	while (*line && ft_isspace(*line))
+		line++;
+	if (ft_strncmp(line, "NO ", 3) == 0)
+		return (parse_texture(line + 3, &config->no_texture));
+	if (ft_strncmp(line, "SO ", 3) == 0)
+		return (parse_texture(line + 3, &config->so_texture));
+	if (ft_strncmp(line, "WE ", 3) == 0)
+		return (parse_texture(line + 3, &config->we_texture));
+	if (ft_strncmp(line, "EA ", 3) == 0)
+		return (parse_texture(line + 3, &config->ea_texture));
+	if (ft_strncmp(line, "F ", 2) == 0)
+		return (parse_color_line(line + 2, &config->floor_color,
+				&config->floor_set));
+	if (ft_strncmp(line, "C ", 2) == 0)
+		return (parse_color_line(line + 2, &config->ceil_color,
+				&config->ceil_set));
+	return (0);
+}
+
+void	process_element(char *line, t_config *cfg, t_mapdata *d, int *state)
 {
 	char	*trimmed;
-	int		result;
 
-	trimmed = ft_strtrim_space(line);
-	if (!trimmed || *trimmed == '\0')
+	trimmed = ft_strtrim(line, " \t\n\r");
+	if (!trimmed)
+		return ;
+	if (ft_strlen(trimmed) == 0)
+	{
+		free(trimmed);
+		return ;
+	}
+	if (is_element_line(trimmed))
+	{
+		if (!parse_element_line(trimmed, cfg))
+			parse_error("Invalid element", line);
+	}
+	else if (is_map_line(trimmed))
+	{
+		*state = 1;
+		handle_map_start(line, d);
+	}
+	else
+		parse_error("Unknown element", line);
+	free(trimmed);
+}
+
+int	handle_map_start(char *line, t_mapdata *data)
+{
+	int	cap;
+
+	cap = 16;
+	data->lines = malloc(sizeof(char *) * cap);
+	if (!data->lines)
 		return (0);
-	result = try_parse_texture(trimmed, data);
-	if (result != -1)
-		return (result);
-	result = try_parse_color(trimmed, data);
-	if (result != -1)
-		return (result);
-	return (-1);
+	return (add_map_line(data, line, &cap));
 }

@@ -3,83 +3,91 @@
 /*                                                        :::      ::::::::   */
 /*   parsing_map.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: student <student@42.fr>                    +#+  +:+       +#+        */
+/*   By: student <student@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/01/01 00:00:00 by student           #+#    #+#             */
-/*   Updated: 2024/01/01 00:00:00 by student          ###   ########.fr       */
+/*   Created: 2025/01/01 00:00:00 by student           #+#    #+#             */
+/*   Updated: 2025/01/01 00:00:00 by student          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "parsing.h"
-#include "libft.h"
 
-static void	remove_newline(char *str)
+int	is_map_line(const char *line)
 {
-	int	len;
-
-	if (!str)
-		return ;
-	len = ft_strlen(str);
-	if (len > 0 && str[len - 1] == '\n')
-		str[len - 1] = '\0';
+	while (*line)
+	{
+		if (*line != '0' && *line != '1' && *line != ' '
+			&& *line != 'N' && *line != 'S' && *line != 'E'
+			&& *line != 'W' && *line != '\t')
+			return (0);
+		line++;
+	}
+	return (1);
 }
 
-static void	replace_tabs(char *str)
+int	grow_map_array(t_mapdata *data, int *capacity)
 {
-	int	i;
+	char	**new_lines;
+	int		i;
 
+	*capacity *= 2;
+	new_lines = malloc(sizeof(char *) * (*capacity));
+	if (!new_lines)
+		return (0);
 	i = 0;
-	while (str[i])
+	while (i < data->count)
 	{
-		if (str[i] == '\t')
-			str[i] = ' ';
+		new_lines[i] = data->lines[i];
 		i++;
 	}
+	free(data->lines);
+	data->lines = new_lines;
+	return (1);
 }
 
-int	add_map_line(t_mapdata *data, char *line, int *capacity)
+int	add_map_line(t_mapdata *data, char *line, int *cap)
 {
-	int	len;
+	char	*copy;
+	int		len;
 
-	if (data->map_height >= *capacity)
+	if (data->count >= *cap - 1)
 	{
-		if (grow_map_array(data, capacity))
-			return (1);
+		if (!grow_map_array(data, cap))
+			return (0);
 	}
-	remove_newline(line);
-	replace_tabs(line);
-	data->map[data->map_height] = ft_strdup(line);
-	if (!data->map[data->map_height])
+	copy = ft_strdup(line);
+	if (!copy)
+		return (0);
+	len = ft_strlen(copy);
+	if (len > 0 && copy[len - 1] == '\n')
+		copy[len - 1] = '\0';
+	data->lines[data->count] = copy;
+	data->count++;
+	len = ft_strlen(copy);
+	if (len > data->width)
+		data->width = len;
+	return (1);
+}
+
+int	process_map_line(t_mapdata *d, char *line, int *cap, int *found)
+{
+	char	*trimmed;
+
+	trimmed = ft_strtrim(line, " \t\n\r");
+	if (!trimmed)
+		return (0);
+	if (ft_strlen(trimmed) == 0)
+	{
+		if (d->count > 0)
+			*found = 1;
+		free(trimmed);
 		return (1);
-	len = ft_strlen(data->map[data->map_height]);
-	if (len > data->map_width)
-		data->map_width = len;
-	data->map_height++;
-	return (0);
-}
-
-int	parse_map_lines(int fd, char *first_line, t_mapdata *data)
-{
-	char	*line;
-	int		capacity;
-	int		found_empty;
-
-	capacity = 0;
-	data->map = NULL;
-	data->map_height = 0;
-	data->map_width = 0;
-	if (add_map_line(data, first_line, &capacity))
-		return (parse_error("Memory allocation failed"));
-	found_empty = 0;
-	line = get_next_line(fd);
-	while (line)
-	{
-		if (process_map_line(data, line, &capacity, &found_empty))
-			return (free(line), 1);
-		free(line);
-		line = get_next_line(fd);
 	}
-	if (data->map_height == 0)
-		return (parse_error("Empty map"));
-	return (0);
+	free(trimmed);
+	if (*found)
+	{
+		ft_putstr_fd("Error\nEmpty line in map\n", 2);
+		return (0);
+	}
+	return (add_map_line(d, line, cap));
 }

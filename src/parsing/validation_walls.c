@@ -3,80 +3,67 @@
 /*                                                        :::      ::::::::   */
 /*   validation_walls.c                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: student <student@42.fr>                    +#+  +:+       +#+        */
+/*   By: student <student@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/01/01 00:00:00 by student           #+#    #+#             */
-/*   Updated: 2024/01/01 00:00:00 by student          ###   ########.fr       */
+/*   Created: 2025/01/01 00:00:00 by student           #+#    #+#             */
+/*   Updated: 2025/01/01 00:00:00 by student          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "parsing.h"
-#include "libft.h"
 
-static int	is_walkable(char c)
+int	is_walkable(char c)
 {
 	return (c == '0' || c == 'N' || c == 'S' || c == 'E' || c == 'W');
 }
 
-static int	check_adjacent(t_mapdata *data, int x, int y)
+static int	is_space_or_edge(t_map *map, int y, int x)
 {
-	if (x >= (int)ft_strlen(data->map[y - 1]))
+	if (y < 0 || y >= map->height)
 		return (1);
-	if (x >= (int)ft_strlen(data->map[y + 1]))
+	if (x < 0 || x >= map->width)
 		return (1);
-	if (data->map[y][x - 1] == ' ' || data->map[y][x + 1] == ' ')
-		return (1);
-	if (data->map[y - 1][x] == ' ' || data->map[y + 1][x] == ' ')
+	if (map->map[y][x] == ' ' || map->map[y][x] == '\0')
 		return (1);
 	return (0);
 }
 
-static int	is_exposed(t_mapdata *data, int x, int y)
+int	check_adjacent(t_map *map, int y, int x)
 {
-	int	len;
-
-	if (y == 0 || y == data->map_height - 1)
-		return (1);
-	if (x == 0)
-		return (1);
-	len = ft_strlen(data->map[y]);
-	if (x >= len - 1)
-		return (1);
-	return (check_adjacent(data, x, y));
+	if (is_space_or_edge(map, y - 1, x))
+		return (0);
+	if (is_space_or_edge(map, y + 1, x))
+		return (0);
+	if (is_space_or_edge(map, y, x - 1))
+		return (0);
+	if (is_space_or_edge(map, y, x + 1))
+		return (0);
+	return (1);
 }
 
-int	check_map_closed(t_mapdata *data)
+int	is_exposed(t_map *map, int y, int x)
+{
+	if (!is_walkable(map->map[y][x]))
+		return (0);
+	return (!check_adjacent(map, y, x));
+}
+
+int	check_map_closed(t_map *map)
 {
 	int	y;
 	int	x;
-	int	len;
 
 	y = 0;
-	while (y < data->map_height)
+	while (y < map->height)
 	{
 		x = 0;
-		len = ft_strlen(data->map[y]);
-		while (x < len)
+		while (x < map->width && map->map[y][x])
 		{
-			if (is_walkable(data->map[y][x]))
-			{
-				if (is_exposed(data, x, y))
-					return (parse_error("Map is not closed by walls"));
-			}
+			if (is_exposed(map, y, x))
+				return (0);
 			x++;
 		}
 		y++;
 	}
-	return (0);
-}
-
-int	validate_map(t_mapdata *data)
-{
-	if (!data->map || data->map_height == 0)
-		return (parse_error("No map found"));
-	if (validate_characters(data))
-		return (1);
-	if (check_map_closed(data))
-		return (1);
-	return (0);
+	return (1);
 }

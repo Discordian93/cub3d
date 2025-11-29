@@ -3,65 +3,63 @@
 /*                                                        :::      ::::::::   */
 /*   utils.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: student <student@42.fr>                    +#+  +:+       +#+        */
+/*   By: student <student@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/01/01 00:00:00 by student           #+#    #+#             */
-/*   Updated: 2024/01/01 00:00:00 by student          ###   ########.fr       */
+/*   Created: 2025/01/01 00:00:00 by student           #+#    #+#             */
+/*   Updated: 2025/01/01 00:00:00 by student          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "cub3D.h"
 
-void	put_pixel(t_img *img, int x, int y, int color)
+double	degrees_to_radians(double degrees)
 {
-	char	*dst;
-
-	if (x < 0 || x >= img->width || y < 0 || y >= img->height)
-		return ;
-	dst = img->addr + (y * img->line_len + x * (img->bpp / 8));
-	*(unsigned int *)dst = color;
+	return (degrees * (M_PI / 180.0));
 }
 
-int	rgb_to_int(int r, int g, int b)
+int	map_is_wall(t_map *map, int mx, int my)
 {
-	if (r < 0)
-		r = 0;
-	if (r > 255)
-		r = 255;
-	if (g < 0)
-		g = 0;
-	if (g > 255)
-		g = 255;
-	if (b < 0)
-		b = 0;
-	if (b > 255)
-		b = 255;
-	return ((r << 16) | (g << 8) | b);
+	if (mx < 0 || mx >= map->width || my < 0 || my >= map->height)
+		return (1);
+	if (map->map[my][mx] == ' ' || map->map[my][mx] == '\0')
+		return (1);
+	return (map->map[my][mx] == '1');
 }
 
-int	is_wall(t_game *game, double x, double y)
+double	normalize_angle(double angle)
 {
-	int	mx;
-	int	my;
+	double	two_pi;
 
-	mx = (int)floor(x);
-	my = (int)floor(y);
-	if (mx < 0 || mx >= game->mapdata.map_width)
-		return (1);
-	if (my < 0 || my >= game->mapdata.map_height)
-		return (1);
-	if (game->mapdata.map[my][mx] == '1')
-		return (1);
-	if (game->mapdata.map[my][mx] == ' ')
-		return (1);
-	return (0);
+	two_pi = 2.0 * M_PI;
+	angle = fmod(angle, two_pi);
+	if (angle < 0.0)
+		angle += two_pi;
+	return (angle);
 }
 
-void	ft_error_exit(t_game *game, const char *msg)
+static int	is_player_char(char c)
 {
-	ft_putstr_fd("Error\n", 2);
-	ft_putstr_fd((char *)msg, 2);
-	ft_putstr_fd("\n", 2);
-	cleanup_game(game);
-	exit(1);
+	return (c == 'E' || c == 'N' || c == 'W' || c == 'S');
+}
+
+void	find_player(t_player *pl, t_map *map)
+{
+	int	y;
+	int	x;
+
+	y = 0;
+	while (y < map->height)
+	{
+		x = 0;
+		while (x < map->width && map->map[y][x])
+		{
+			if (is_player_char(map->map[y][x]))
+			{
+				init_pos_pl(pl, map, y, x);
+				return ;
+			}
+			x++;
+		}
+		y++;
+	}
 }

@@ -3,64 +3,71 @@
 /*                                                        :::      ::::::::   */
 /*   validation_map.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: student <student@42.fr>                    +#+  +:+       +#+        */
+/*   By: student <student@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/01/01 00:00:00 by student           #+#    #+#             */
-/*   Updated: 2024/01/01 00:00:00 by student          ###   ########.fr       */
+/*   Created: 2025/01/01 00:00:00 by student           #+#    #+#             */
+/*   Updated: 2025/01/01 00:00:00 by student          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "parsing.h"
-#include "libft.h"
 
-static int	is_valid_map_char(char c)
+int	check_player(t_map *map, int y, int x, int *player_count)
 {
-	if (c == '0' || c == '1' || c == ' ')
-		return (1);
+	char	c;
+
+	c = map->map[y][x];
 	if (c == 'N' || c == 'S' || c == 'E' || c == 'W')
-		return (1);
-	return (0);
+	{
+		(*player_count)++;
+		if (*player_count > 1)
+			return (0);
+	}
+	return (1);
 }
 
-static int	is_player_char(char c)
+static int	is_valid_char(char c)
 {
-	return (c == 'N' || c == 'S' || c == 'E' || c == 'W');
+	return (c == '0' || c == '1' || c == 'N' || c == 'S'
+		|| c == 'E' || c == 'W' || c == ' ');
 }
 
-static int	check_player(t_mapdata *data, int x, int y, char c)
-{
-	if (data->spawn.found)
-		return (parse_error("Multiple player spawns found"));
-	data->spawn.x = x;
-	data->spawn.y = y;
-	data->spawn.dir = c;
-	data->spawn.found = 1;
-	return (0);
-}
-
-int	validate_characters(t_mapdata *data)
+int	validate_characters(t_map *map)
 {
 	int	y;
 	int	x;
-	int	len;
+	int	player_count;
 
+	player_count = 0;
 	y = 0;
-	while (y < data->map_height)
+	while (y < map->height)
 	{
 		x = 0;
-		len = ft_strlen(data->map[y]);
-		while (x < len)
+		while (x < map->width && map->map[y][x])
 		{
-			if (!is_valid_map_char(data->map[y][x]))
-				return (parse_error("Invalid character in map"));
-			if (is_player_char(data->map[y][x]))
-				if (check_player(data, x, y, data->map[y][x]))
-					return (1);
+			if (!is_valid_char(map->map[y][x]))
+				return (0);
+			if (!check_player(map, y, x, &player_count))
+				return (0);
 			x++;
 		}
 		y++;
 	}
-	if (!data->spawn.found)
-		return (parse_error("No player spawn position found"));
-	return (0);
+	if (player_count != 1)
+		return (0);
+	return (1);
+}
+
+void	validate_map(t_map *map)
+{
+	if (!validate_characters(map))
+	{
+		ft_putstr_fd("Error\nInvalid map characters or player count\n", 2);
+		exit(EXIT_FAILURE);
+	}
+	if (!check_map_closed(map))
+	{
+		ft_putstr_fd("Error\nMap is not closed by walls\n", 2);
+		exit(EXIT_FAILURE);
+	}
 }

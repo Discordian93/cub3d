@@ -3,49 +3,50 @@
 /*                                                        :::      ::::::::   */
 /*   init_textures.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: student <student@42.fr>                    +#+  +:+       +#+        */
+/*   By: student <student@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/01/01 00:00:00 by student           #+#    #+#             */
-/*   Updated: 2024/01/01 00:00:00 by student          ###   ########.fr       */
+/*   Created: 2025/01/01 00:00:00 by student           #+#    #+#             */
+/*   Updated: 2025/01/01 00:00:00 by student          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "cub3D.h"
 
-static int	load_texture(void *mlx, char *path, t_img *img)
+static int	load_single_texture(t_contex *contex, int index, char *path)
 {
-	img->ptr = mlx_xpm_file_to_image(mlx, path, &img->width, &img->height);
-	if (!img->ptr)
-	{
-		ft_putstr_fd("Error\nFailed to load texture: ", 2);
-		ft_putstr_fd(path, 2);
-		ft_putstr_fd("\n", 2);
-		return (1);
-	}
-	img->addr = mlx_get_data_addr(img->ptr, &img->bpp,
-			&img->line_len, &img->endian);
-	if (!img->addr)
-	{
-		mlx_destroy_image(mlx, img->ptr);
-		img->ptr = NULL;
-		return (1);
-	}
-	return (0);
+	contex->text[index].ptr = mlx_xpm_file_to_image(contex->mlx,
+			path, &contex->text[index].width, &contex->text[index].height);
+	if (contex->text[index].ptr == NULL)
+		return (0);
+	contex->text[index].addr = mlx_get_data_addr(contex->text[index].ptr,
+			&contex->text[index].bpp,
+			&contex->text[index].line_len,
+			&contex->text[index].endian);
+	if (contex->text[index].addr == NULL)
+		return (0);
+	return (1);
 }
 
-int	load_textures(t_game *game)
+void	load_textures(t_contex *contex)
 {
-	if (load_texture(game->mlx, game->mapdata.tex.north,
-			&game->textures.north))
-		return (1);
-	if (load_texture(game->mlx, game->mapdata.tex.south,
-			&game->textures.south))
-		return (1);
-	if (load_texture(game->mlx, game->mapdata.tex.east,
-			&game->textures.east))
-		return (1);
-	if (load_texture(game->mlx, game->mapdata.tex.west,
-			&game->textures.west))
-		return (1);
-	return (0);
+	if (!load_single_texture(contex, FACE_NO, contex->config->no_texture))
+	{
+		ft_clean(contex);
+		ft_error("Error loading NO texture\n");
+	}
+	if (!load_single_texture(contex, FACE_SO, contex->config->so_texture))
+	{
+		ft_clean(contex);
+		ft_error("Error loading SO texture\n");
+	}
+	if (!load_single_texture(contex, FACE_EA, contex->config->ea_texture))
+	{
+		ft_clean(contex);
+		ft_error("Error loading EA texture\n");
+	}
+	if (!load_single_texture(contex, FACE_WE, contex->config->we_texture))
+	{
+		ft_clean(contex);
+		ft_error("Error loading WE texture\n");
+	}
 }

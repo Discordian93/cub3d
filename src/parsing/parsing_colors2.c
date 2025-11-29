@@ -3,36 +3,35 @@
 /*                                                        :::      ::::::::   */
 /*   parsing_colors2.c                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: student <student@42.fr>                    +#+  +:+       +#+        */
+/*   By: student <student@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/01/01 00:00:00 by student           #+#    #+#             */
-/*   Updated: 2024/01/01 00:00:00 by student          ###   ########.fr       */
+/*   Created: 2025/01/01 00:00:00 by student           #+#    #+#             */
+/*   Updated: 2025/01/01 00:00:00 by student          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "parsing.h"
-#include "libft.h"
 
-static char	*skip_whitespace(char *str)
+int	parse_color_line(const char *line, int *color, int *flag)
 {
-	while (*str == ' ' || *str == '\t')
-		str++;
-	return (str);
-}
+	char	*trimmed;
+	int		result;
 
-int	try_parse_color(char *line, t_mapdata *data)
-{
-	char	*content;
-
-	if (line[0] == 'F' && (line[1] == ' ' || line[1] == '\t'))
+	if (*flag)
 	{
-		content = skip_whitespace(line + 1);
-		return (parse_color(content, &data->floor));
+		ft_putstr_fd("Error\nDuplicate color\n", 2);
+		return (0);
 	}
-	else if (line[0] == 'C' && (line[1] == ' ' || line[1] == '\t'))
-	{
-		content = skip_whitespace(line + 1);
-		return (parse_color(content, &data->ceiling));
-	}
-	return (-1);
+	while (*line && ft_isspace(*line))
+		line++;
+	trimmed = ft_strtrim(line, " \t\n\r");
+	if (!trimmed)
+		return (0);
+	result = parse_color(trimmed);
+	free(trimmed);
+	if (result == -1)
+		return (0);
+	*color = result;
+	*flag = 1;
+	return (1);
 }

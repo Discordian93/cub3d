@@ -3,77 +3,63 @@
 /*                                                        :::      ::::::::   */
 /*   parsing_file.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: student <student@42.fr>                    +#+  +:+       +#+        */
+/*   By: student <student@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/01/01 00:00:00 by student           #+#    #+#             */
-/*   Updated: 2024/01/01 00:00:00 by student          ###   ########.fr       */
+/*   Created: 2025/01/01 00:00:00 by student           #+#    #+#             */
+/*   Updated: 2025/01/01 00:00:00 by student          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "parsing.h"
-#include "libft.h"
 
-static int	handle_map_start(t_mapdata *data, char *line, char **first)
+int	open_cub_file(const char *filename)
 {
-	if (!all_elements_set(data))
+	int		fd;
+	size_t	len;
+
+	len = ft_strlen(filename);
+	if (len < 4 || ft_strncmp(filename + len - 4, ".cub", 4) != 0)
 	{
-		free(line);
-		return (parse_error("Missing elements before map"));
+		ft_putstr_fd("Error\nInvalid file extension\n", 2);
+		exit(EXIT_FAILURE);
 	}
-	*first = line;
-	return (2);
+	fd = open(filename, O_RDONLY);
+	if (fd < 0)
+	{
+		ft_putstr_fd("Error\nCannot open file\n", 2);
+		exit(EXIT_FAILURE);
+	}
+	return (fd);
 }
 
-static int	process_element(char *line, t_mapdata *data, char **first)
-{
-	int	result;
-
-	result = parse_element_line(line, data);
-	if (result == 1)
-	{
-		free(line);
-		return (1);
-	}
-	if (result == -1)
-		return (handle_map_start(data, line, first));
-	return (0);
-}
-
-static int	parse_loop(int fd, t_mapdata *data, char **first_map_line)
+static int	parse_loop(int fd, t_config *cfg, t_mapdata *d, int *state)
 {
 	char	*line;
-	int		ret;
+	int		cap;
+	int		found_empty;
 
+	cap = 16;
+	found_empty = 0;
 	line = get_next_line(fd);
-	while (line)
+	while (line != NULL)
 	{
-		if (!is_empty_line(line))
+		if (*state == 0)
+			process_element(line, cfg, d, state);
+		else
 		{
-			ret = process_element(line, data, first_map_line);
-			if (ret == 1)
-				return (1);
-			if (ret == 2)
-				return (0);
+			if (!process_map_line(d, line, &cap, &found_empty))
+				return (free(line), 0);
 		}
 		free(line);
 		line = get_next_line(fd);
 	}
-	return (-1);
+	return (1);
 }
 
-int	parse_elements(int fd, t_mapdata *data, char **first_map_line)
+int	parse_elements(int fd, t_config *config, t_mapdata *data)
 {
-	int	ret;
+	int	state;
 
-	*first_map_line = NULL;
-	ret = parse_loop(fd, data, first_map_line);
-	if (ret == 1)
-		return (1);
-	if (ret == -1)
-	{
-		if (!all_elements_set(data))
-			return (parse_error("Missing required elements"));
-		return (parse_error("No map found in file"));
-	}
-	return (0);
+	state = 0;
+	return (parse_loop(fd, config, data, &state));
 }

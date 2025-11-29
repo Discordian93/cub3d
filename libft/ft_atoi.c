@@ -3,40 +3,56 @@
 /*                                                        :::      ::::::::   */
 /*   ft_atoi.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: student <student@42.fr>                    +#+  +:+       +#+        */
+/*   By: ypacileo <ypacileo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/01/01 00:00:00 by student           #+#    #+#             */
-/*   Updated: 2024/01/01 00:00:00 by student          ###   ########.fr       */
+/*   Created: 2024/06/09 13:34:07 by ypacileo          #+#    #+#             */
+/*   Updated: 2024/07/13 13:54:46 by ypacileo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+//#include <stdio.h>
 #include "libft.h"
 
-static int	ft_isspace(char c)
+int	ft_atoi(const char *s)
 {
-	return (c == ' ' || c == '\t' || c == '\n'
-		|| c == '\r' || c == '\v' || c == '\f');
-}
+	size_t	i;
+	long	number;
+	int		sign;
 
-int	ft_atoi(const char *str)
-{
-	int	sign;
-	int	sum;
-
-	while (ft_isspace(*str))
-		str++;
+	i = 0;
 	sign = 1;
-	if (*str == '-' || *str == '+')
+	number = 0;
+	while (s[i] == ' ' || s[i] == '\t' || s[i] == '\n'
+		|| s[i] == '\r' || s[i] == '\v' || s[i] == '\f' )
+		i++;
+	if (s[i] == '-')
 	{
-		if (*str == '-')
-			sign = -1;
-		str++;
+		sign = -1;
+		i++;
 	}
-	sum = 0;
-	while (*str >= '0' && *str <= '9')
+	else if (s[i] == '+')
+		i++;
+	while (s[i] >= '0' && s[i] <= '9')
 	{
-		sum = sum * 10 + (*str - '0');
-		str++;
+		number = number * 10 + s[i] - 48;
+		i++;
 	}
-	return (sign * sum);
+	return (number * sign);
 }
+
+/*
+int main() {
+    const char *str1 = "+12a45";
+    const char *str2 = "z42";
+    const char *str3 = "  -6789p";
+
+    int num1 = ft_atoi(str1);
+    int num2 = ft_atoi(str2);
+    int num3 = ft_atoi(str3);
+
+    printf("El número convertido de '%s' es: %d\n", str1, num1);  // Salida: 12
+    printf("El número convertido de '%s' es: %d\n", str2, num2);  // Salida: 42
+    printf("El número convertido de '%s' es: %d\n", str3, num3);// Salida: -6789
+
+    return 0;
+}*/

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   cub3D.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: student <student@42.fr>                    +#+  +:+       +#+        */
+/*   By: student <student@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/01/01 00:00:00 by student           #+#    #+#             */
-/*   Updated: 2024/01/01 00:00:00 by student          ###   ########.fr       */
+/*   Created: 2025/01/01 00:00:00 by student           #+#    #+#             */
+/*   Updated: 2025/01/01 00:00:00 by student          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,29 +20,36 @@
 # include <fcntl.h>
 # include <unistd.h>
 # include "libft.h"
-# include "parsing.h"
 
-# define WIDTH   800
-# define HEIGHT  600
+# define WIDTH   1920
+# define HEIGHT  1080
+# define KEY_LEFT   65363
+# define KEY_RIGHT  65361
+# define KEY_ESC 65307
+# define KEY_W 119
+# define KEY_S 115
+# define KEY_A 97
+# define KEY_D 100
 
-# define KEY_W       119
-# define KEY_A       97
-# define KEY_S       115
-# define KEY_D       100
-# define KEY_LEFT    65361
-# define KEY_RIGHT   65363
-# define KEY_ESC     65307
-
-# define FOV_RAD     1.0471975511965976
-# define TILE_SZ     1.0
-# define STEP        0.02
-# define EPS         1e-9
-# define MOVE_SPEED  0.05
-# define ROT_SPEED   0.03
+# define FOV_DEG 60.0
+# define TILE_SZ 1.0
+# define EPS 1e-9
+# define MOVE_SPEED 0.08
 
 # ifndef M_PI
 #  define M_PI 3.14159265358979323846
 # endif
+
+# define FOV_RAD (FOV_DEG * (M_PI / 180.0))
+
+enum e_face
+{
+	FACE_NO,
+	FACE_SO,
+	FACE_EA,
+	FACE_WE,
+	NUM_TEX
+};
 
 typedef struct s_img
 {
@@ -51,8 +58,8 @@ typedef struct s_img
 	int		bpp;
 	int		line_len;
 	int		endian;
-	int		width;
 	int		height;
+	int		width;
 }	t_img;
 
 typedef struct s_player
@@ -60,66 +67,83 @@ typedef struct s_player
 	double	x;
 	double	y;
 	double	dir;
+	double	dist;
+	double	corr;
+	double	shade;
+	double	wall_h;
+	double	hit_x;
+	double	hit_y;
+	double	tex_x_rel;
+	int		face;
 }	t_player;
 
-typedef struct s_textures_img
+typedef struct s_map
 {
-	t_img	north;
-	t_img	south;
-	t_img	east;
-	t_img	west;
-}	t_textures_img;
+	char	*name;
+	int		width;
+	int		height;
+	char	**map;
+}	t_map;
 
-typedef struct s_raycast
+typedef struct s_config
 {
-	double	dist;
-	int		side;
-	double	wall_x;
-}	t_raycast;
+	char	*no_texture;
+	char	*so_texture;
+	char	*ea_texture;
+	char	*we_texture;
+	int		floor_color;
+	int		ceil_color;
+	int		floor_set;
+	int		ceil_set;
+}	t_config;
 
-typedef struct s_tex_params
+typedef struct s_contex
 {
-	double	tex_step;
-	double	tex_pos;
-	int		tex_y;
-	int		color;
-}	t_tex_params;
+	void		*mlx;
+	void		*win;
+	t_img		*img;
+	t_img		text[NUM_TEX];
+	t_img		selec_text;
+	t_player	*pl;
+	double		proj_dist;
+	t_map		*map_g;
+	t_config	*config;
+}	t_contex;
 
-typedef struct s_game
-{
-	void			*mlx;
-	void			*win;
-	t_img			frame;
-	t_player		player;
-	t_mapdata		mapdata;
-	t_textures_img	textures;
-	int				floor_color;
-	int				ceiling_color;
-	double			proj_dist;
-}	t_game;
+/* ======================== Raycasting & Rendering ======================== */
+double	cast_ray(double ax, t_contex *contex);
+void	draw_column(t_contex *contex, int x);
+void	render_frame(t_contex *contex);
+int		loop_hook(t_contex *contex);
 
-int			init_game(t_game *game, char *map_file);
-int			load_textures(t_game *game);
-void		init_player(t_game *game);
-void		render_frame(t_game *game);
-void		draw_column(t_game *game, int x, double wall_h, t_raycast *rc);
-void		draw_wall_stripe(t_game *game, int x, int *bounds, t_raycast *rc);
-double		cast_ray(t_game *game, double angle, t_raycast *rc);
-int			get_texture_pixel(t_img *tex, int tex_x, int tex_y);
-t_img		*select_texture(t_game *game, int side);
-int			handle_keypress(int keycode, t_game *game);
-int			handle_close(t_game *game);
-int			loop_hook(t_game *game);
-void		move_forward(t_game *game);
-void		move_backward(t_game *game);
-void		strafe_left(t_game *game);
-void		strafe_right(t_game *game);
-void		rotate_left(t_game *game);
-void		rotate_right(t_game *game);
-void		put_pixel(t_img *img, int x, int y, int color);
-int			rgb_to_int(int r, int g, int b);
-int			is_wall(t_game *game, double x, double y);
-void		cleanup_game(t_game *game);
-void		ft_error_exit(t_game *game, const char *msg);
+/* ======================== Color & Pixel Functions ======================= */
+void	put_px(t_img *img, int x, int y, int rgb);
+int		get_tex_color(t_img *tex, int tx, int ty);
+double	shade_from_dist(double corr);
+int		apply_shade(int color, double shade);
+
+/* ======================== Player & Movement ============================= */
+void	find_player(t_player *pl, t_map *map);
+void	init_pos_pl(t_player *pl, t_map *map, int y, int x);
+int		handle_keypress(int keycode, t_contex *contex);
+void	move_player(t_player *pl, t_map *map, double move_x, double move_y);
+double	normalize_angle(double angle);
+double	degrees_to_radians(double degrees);
+
+/* ======================== Map Utilities ================================= */
+int		map_is_wall(t_map *map, int mx, int my);
+
+/* ======================== Initialization ================================ */
+void	init_contex(t_contex **contex);
+void	load_textures(t_contex *contex);
+
+/* ======================== Cleanup ======================================= */
+void	ft_error(const char *msg);
+void	free_map(t_map **map);
+void	ft_free_contex(t_contex *context);
+int		close_window(t_contex *contex);
+void	ft_clean(t_contex *contex);
+int		handle_destroy(t_contex *contex);
+void	free_config(t_config *config);
 
 #endif
