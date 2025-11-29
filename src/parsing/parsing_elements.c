@@ -1,7 +1,7 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   parsing_colors.c                                   :+:      :+:    :+:   */
+/*   parsing_elements.c                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: esteizag <esteizag@student.42urduliz.com>  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
@@ -52,7 +52,21 @@ int	parse_element_line(const char *line, t_config *config)
 	return (0);
 }
 
-void	process_element(char *line, t_contex *ctx, t_mapdata *d, int *state)
+static void	handle_element_error(char *trimmed, char *line, t_parse_ctx *p)
+{
+	free(trimmed);
+	p->line = line;
+	parse_error("Invalid element", p);
+}
+
+static void	handle_unknown_error(char *trimmed, char *line, t_parse_ctx *p)
+{
+	free(trimmed);
+	p->line = line;
+	parse_error("Unknown element", p);
+}
+
+void	process_element(char *line, t_parse_ctx *p, int *state)
 {
 	char	*trimmed;
 
@@ -66,32 +80,15 @@ void	process_element(char *line, t_contex *ctx, t_mapdata *d, int *state)
 	}
 	if (is_element_line(trimmed))
 	{
-		if (!parse_element_line(trimmed, ctx->config))
-		{
-			free(trimmed);
-			parse_error("Invalid element", ctx, d);
-		}
+		if (!parse_element_line(trimmed, p->ctx->config))
+			handle_element_error(trimmed, line, p);
 	}
 	else if (is_map_line(trimmed))
 	{
 		*state = 1;
-		handle_map_start(line, d);
+		handle_map_start(line, p->data);
 	}
 	else
-	{
-		free(trimmed);
-		parse_error("Unknown element", ctx, d);
-	}
+		handle_unknown_error(trimmed, line, p);
 	free(trimmed);
-}
-
-int	handle_map_start(char *line, t_mapdata *data)
-{
-	int	cap;
-
-	cap = 16;
-	data->lines = malloc(sizeof(char *) * cap);
-	if (!data->lines)
-		return (0);
-	return (add_map_line(data, line, &cap));
 }

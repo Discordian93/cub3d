@@ -1,7 +1,7 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   parsing_colors.c                                   :+:      :+:    :+:   */
+/*   parsing_utils.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: esteizag <esteizag@student.42urduliz.com>  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
@@ -44,14 +44,19 @@ char	*ft_strtrim_free(char *s1, const char *set)
 	return (result);
 }
 
-void	parse_error(const char *msg, t_contex *ctx, t_mapdata *data)
+void	parse_error(const char *msg, t_parse_ctx *p)
 {
 	ft_putstr_fd("Error\n", 2);
 	ft_putstr_fd((char *)msg, 2);
 	ft_putstr_fd("\n", 2);
-	if (data)
-		free_mapdata(data);
-	if (ctx)
-		ft_clean(ctx);
+	if (p->line)
+		free(p->line);
+	if (p->fd >= 0)
+		close(p->fd);
+	gnl_clear();
+	if (p->data)
+		free_mapdata(p->data);
+	if (p->ctx)
+		ft_clean(p->ctx);
 	exit(EXIT_FAILURE);
 }

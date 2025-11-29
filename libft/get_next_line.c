@@ -12,9 +12,6 @@
 
 #include "get_next_line.h"
 
-/*Esta funcion retorna una nueva cadena despues de 
-encontrar un salto de linea, la cadena leida se reservado
-previamente con malloc*/
 char	*next_string(char *read_string)
 {
 	char	*next_string;
@@ -32,11 +29,11 @@ char	*next_string(char *read_string)
 	next_string = malloc(sizeof(char) * (ft_strlen(read_string) - i + 1));
 	if (next_string == NULL)
 		return (NULL);
-	i ++;
+	i++;
 	j = 0;
 	while (read_string[i] != '\0')
 	{
-		next_string[j ++] = read_string[i++];
+		next_string[j++] = read_string[i++];
 	}
 	next_string[j] = '\0';
 	free(read_string);
@@ -71,49 +68,51 @@ char	*new_line(char *read_string)
 	return (line);
 }
 
-char	*get_next_line(int fd)
+void	gnl_clear(void)
 {
-	static char	*big_string;
-	char		buffer[BUFFER_SIZE + 1];
-	int			readbytes;
-	char		*line;
+	get_next_line(-42);
+}
 
-	if (fd < 0 || BUFFER_SIZE <= 0)
-		return (NULL);
+static int	fill_big_string(int fd, char **big_string)
+{
+	char	buffer[BUFFER_SIZE + 1];
+	int		readbytes;
+
 	readbytes = 1;
-	while ((!ft_strchr(big_string, '\n')) && readbytes > 0)
+	while (!ft_strchr(*big_string, '\n') && readbytes > 0)
 	{
 		readbytes = read(fd, buffer, BUFFER_SIZE);
 		if (readbytes == -1)
-			return (NULL);
+			return (-1);
 		if (readbytes > 0)
 		{
 			buffer[readbytes] = '\0';
-			big_string = ft_strjoin_gnl(big_string, buffer);
+			*big_string = ft_strjoin_gnl(*big_string, buffer);
+			if (*big_string == NULL)
+				return (-1);
 		}
 	}
-	if (big_string == NULL)
+	return (readbytes);
+}
+
+char	*get_next_line(int fd)
+{
+	static char	*big_string;
+	char		*line;
+	int			ret;
+
+	if (fd == -42)
+	{
+		free(big_string);
+		big_string = NULL;
+		return (NULL);
+	}
+	if (fd < 0 || BUFFER_SIZE <= 0)
+		return (NULL);
+	ret = fill_big_string(fd, &big_string);
+	if (ret == -1 || big_string == NULL)
 		return (NULL);
 	line = new_line(big_string);
 	big_string = next_string(big_string);
 	return (line);
 }
-
-/*int	main(void)
-{
-	int		fd;
-	char	*string;
-
-	fd = open ("test.dat", O_RDONLY);
-	
-	while ((string = get_next_line(fd) )!= NULL)
-	{
-		printf("%s", string);
-		free(string);
-
-	}
-	
-	close(fd);
-	write(1,"\n", 1);
-	return (0);
-}*/

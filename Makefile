@@ -37,6 +37,7 @@ SRCS = $(SRC_DIR)/main.c \
        $(PARSE_DIR)/parsing_file.c \
        $(PARSE_DIR)/parsing_elements.c \
        $(PARSE_DIR)/parsing_textures.c \
+	   $(PARSE_DIR)/parsing_elements_2.c \
        $(PARSE_DIR)/parsing_colors.c \
        $(PARSE_DIR)/parsing_colors2.c \
        $(PARSE_DIR)/parsing_map.c \

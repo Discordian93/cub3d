@@ -1,7 +1,7 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   parsing_colors.c                                   :+:      :+:    :+:   */
+/*   parsing_file.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: esteizag <esteizag@student.42urduliz.com>  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
@@ -34,19 +34,29 @@ int	open_cub_file(const char *filename)
 	return (fd);
 }
 
+static void	init_parse_ctx(t_parse_ctx *p, t_contex *ctx, t_mapdata *d, int fd)
+{
+	p->ctx = ctx;
+	p->data = d;
+	p->line = NULL;
+	p->fd = fd;
+}
+
 static int	parse_loop(int fd, t_contex *ctx, t_mapdata *d, int *state)
 {
-	char	*line;
-	int		cap;
-	int		found_empty;
+	char		*line;
+	int			cap;
+	int			found_empty;
+	t_parse_ctx	p;
 
 	cap = 16;
 	found_empty = 0;
+	init_parse_ctx(&p, ctx, d, fd);
 	line = get_next_line(fd);
 	while (line != NULL)
 	{
 		if (*state == 0)
-			process_element(line, ctx, d, state);
+			process_element(line, &p, state);
 		else
 		{
 			if (!process_map_line(d, line, &cap, &found_empty))

@@ -22,13 +22,21 @@ typedef struct s_mapdata
 	int		width;
 }	t_mapdata;
 
+typedef struct s_parse_ctx
+{
+	t_contex	*ctx;
+	t_mapdata	*data;
+	char		*line;
+	int			fd;
+}	t_parse_ctx;
+
 /* ======================== Main Parsing ================================== */
 void	parse_cub_file(const char *filename, t_contex *contex);
 
 /* ======================== File Parsing ================================== */
 int		open_cub_file(const char *filename);
 int		parse_elements(int fd, t_contex *contex, t_mapdata *data);
-void	process_element(char *line, t_contex *ctx, t_mapdata *d, int *state);
+void	process_element(char *line, t_parse_ctx *p, int *state);
 int		handle_map_start(char *line, t_mapdata *data);
 
 /* ======================== Element Parsing =============================== */
@@ -73,6 +81,6 @@ char	*ft_strtrim_free(char *s1, const char *set);
 int		is_empty_line(const char *line);
 void	skip_spaces(const char **str);
 int		ft_isspace(char c);
-void	parse_error(const char *msg, t_contex *ctx, t_mapdata *data);
+void	parse_error(const char *msg, t_parse_ctx *p);
 
 #endif

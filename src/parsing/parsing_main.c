@@ -1,7 +1,7 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   parsing_colors.c                                   :+:      :+:    :+:   */
+/*   parsing_main.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: esteizag <esteizag@student.42urduliz.com>  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
@@ -50,6 +50,18 @@ void	free_mapdata(t_mapdata *data)
 	}
 }
 
+static void	alloc_map(t_contex *contex, t_mapdata *data)
+{
+	contex->map_g = malloc(sizeof(t_map));
+	if (!contex->map_g)
+	{
+		free_mapdata(data);
+		ft_clean(contex);
+		ft_error("Memory allocation failed\n");
+	}
+	ft_bzero(contex->map_g, sizeof(t_map));
+}
+
 void	parse_cub_file(const char *filename, t_contex *contex)
 {
 	int			fd;
@@ -66,14 +78,7 @@ void	parse_cub_file(const char *filename, t_contex *contex)
 	}
 	close(fd);
 	validate_config(contex->config);
-	contex->map_g = malloc(sizeof(t_map));
-	if (!contex->map_g)
-	{
-		free_mapdata(&data);
-		ft_clean(contex);
-		ft_error("Memory allocation failed\n");
-	}
-	ft_bzero(contex->map_g, sizeof(t_map));
+	alloc_map(contex, &data);
 	build_map(&data, contex->map_g);
 	free_mapdata(&data);
 	validate_map(contex->map_g);
