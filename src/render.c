@@ -12,15 +12,6 @@
 
 #include "cub3D.h"
 
-typedef struct s_column
-{
-	int		y_top;
-	int		y_bot;
-	double	wall_h_real;
-	double	y_top_real;
-	int		tex_x;
-}	t_column;
-
 static void	init_column(t_column *col, t_contex *contex)
 {
 	col->wall_h_real = contex->pl->wall_h;

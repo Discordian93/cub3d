@@ -18,7 +18,9 @@ int	open_cub_file(const char *filename)
 	size_t	len;
 
 	len = ft_strlen(filename);
-	if (len < 4 || ft_strncmp(filename + len - 4, ".cub", 4) != 0)
+	if (len < 4 || ft_strncmp(filename + len - 4, ".cub", 4) != 0
+		|| !ft_strchr(filename, '.')
+		|| ft_strlen(ft_strchr(filename, '.')) != 4)
 	{
 		ft_putstr_fd("Error\nInvalid file extension\n", 2);
 		exit(EXIT_FAILURE);

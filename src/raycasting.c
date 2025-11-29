@@ -12,23 +12,6 @@
 
 #include "cub3D.h"
 
-typedef struct s_ray
-{
-	double	pos_x;
-	double	pos_y;
-	double	dir_x;
-	double	dir_y;
-	double	delta_x;
-	double	delta_y;
-	double	side_x;
-	double	side_y;
-	int		map_x;
-	int		map_y;
-	int		step_x;
-	int		step_y;
-	int		side;
-}	t_ray;
-
 static void	init_ray(t_ray *r, double ax, t_player *pl)
 {
 	r->pos_x = pl->x;

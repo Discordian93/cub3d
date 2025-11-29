@@ -38,7 +38,8 @@ static void	process_column(t_contex *contex, int x, double ray_ang)
 
 	contex->pl->dist = cast_ray(ray_ang, contex);
 	contex->pl->corr = contex->pl->dist * cos(ray_ang - contex->pl->dir);
-	contex->pl->wall_h = (TILE_SZ * contex->proj_dist) / (contex->pl->corr + EPS);
+	contex->pl->wall_h = (TILE_SZ * contex->proj_dist)
+		/ (contex->pl->corr + EPS);
 	cell_x = contex->pl->hit_x - floor(contex->pl->hit_x);
 	cell_y = contex->pl->hit_y - floor(contex->pl->hit_y);
 	contex->pl->tex_x_rel = calc_wall_x(contex, cell_x, cell_y);
