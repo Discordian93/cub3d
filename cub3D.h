@@ -6,7 +6,7 @@
 /*   By: ypacileo <ypacileo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/01 17:03:53 by ypacileo          #+#    #+#             */
-/*   Updated: 2025/11/09 11:42:01 by ypacileo         ###   ########.fr       */
+/*   Updated: 2025/11/23 17:45:10 by ypacileo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,17 +23,21 @@
 #include "libft.h"
 
 
-#define WIDTH   800              // Ancho de la ventana en píxeles
-#define HEIGHT  600              // Alto de la ventana en píxeles
-#define left_arrow 65363
-#define right_arrow 65361
-#define KEY_ESC 65307
+# define WIDTH   2000           // Ancho de la ventana en píxeles
+# define HEIGHT  1200       // Alto de la ventana en píxeles
+# define KEY_LEFT   65363
+# define KEY_RIGHT  65361
+# define KEY_ESC 65307
+# define KEY_W 119
+# define KEY_S 115
+# define KEY_A 97
+# define KEY_D 100
 
 
 /* ------------------------ Parámetros de proyección ------------------------ */
 #define FOV_RAD  (60.0 * (M_PI / 180.0)) // Campo de visión horizontal: 60° en radianes
 #define TILE_SZ  1.0             // Altura/escala de una pared en el mundo (1 unidad por celda)
-#define STEP     0.02            // Paso de avance incremental para el rayo
+#define STEP     0.02           // Paso de avance incremental para el rayo
 #define EPS      1e-9            // Épsilon para evitar divisiones por cero
 
 
@@ -49,6 +53,18 @@
 
 /* --------------------------------- MAPA ----------------------------------- */
 
+
+
+
+enum 
+{
+    FACE_NO, 
+    FACE_SO, 
+    FACE_EA, 
+    FACE_WE,
+	num_tex
+};
+
 typedef struct s_img 
 {
     void    *ptr;        // Puntero a la imagen MLX
@@ -56,13 +72,26 @@ typedef struct s_img
     int     bpp;         // Bits por píxel (normalmente 32 en MLX Linux)
     int     line_len;    // Bytes por fila (stride)
     int     endian;      // Endianness del buffer
+	int     height;
+    int     width;
+    char	*name;
 }   t_img;
 
-typedef struct s_player 
+typedef struct s_player
 {
-    double x;            // Posición X en el mundo (columna), en unidades de celda
-    double y;            // Posición Y en el mundo (fila), en unidades de celda
-    double dir;          // Dirección de la cámara en radianes (0 = Este)
+    double  x;
+    double  y;
+    double  dir;
+    double  dist;
+    double  rel;
+    double  corr;
+    double  shade;
+    double  wall_h;
+    double  hit_x;
+    double  hit_y;
+    //int     side;      // 0 = vertical, 1 = horizontal
+    double  tex_x_rel;
+    int     face;
 }   t_player;
 
 typedef struct s_map
@@ -75,12 +104,15 @@ typedef struct s_map
 
 typedef struct s_contex 
 {
-    void     *mlx;       // Contexto MLX
-    void     *win;       // Ventana MLX
-    t_img     img;     // Framebuffer donde dibujamos
-    t_player  pl;        // Estado del jugador/cámara
-    double    proj_dist; // Distancia al plano de proyección: (WIDTH/2)/tan(FOV/2)
-    t_map	*map_g;
+    void        *mlx;       // Contexto MLX
+    void        *win;       // Ventana MLX
+    t_img       *img;     // Framebuffer donde dibujamos
+    t_img       text[num_tex]; // textura norte
+	t_img		selec_text;
+    t_player    *pl;        // Estado del jugador/cámara
+    double      proj_dist; // Distancia al plano de proyección: (WIDTH/2)/tan(FOV/2)
+    t_map       *map_g;
+    
 }   t_contex;
 
 void	counter_row(t_map *map, char *line, int fd);
@@ -94,12 +126,28 @@ double	degrees_to_radians(double degrees);
 double	calc_max_dist(int width, int height);
 int		map_is_wall(t_map *map, int mx, int my);
 void	find_player(t_player *pl, t_map *map);
-double cast_ray(double ax, const t_player *pl, t_map *map);
-void	draw_column(t_contex *contex, int x, double wall_h, int wall_rgb);
+//double cast_ray(double ax, t_player *pl, t_map *map);
+//double	cast_ray(double ax, t_player *pl, t_map *map, t_contex *c);
+
+double	cast_ray(double ax, t_contex *contex);
+//void	draw_column(t_contex *contex, int x, double wall_h, int wall_rgb);
 void	render_frame(t_contex *app);
 int		loop_hook(t_contex *app);
 int     handle_keypress(int keycode, t_contex *contex);
 void	ft_error(const char *msg);
 void	map_validation(t_map **map, int argc, char **argv);
+void    init_pos_pl(t_player *pl, t_map *map, int y, int x);
+int get_tex_color(t_img *tex, int tx, int ty);
+//void    draw_column(t_contex *contex, int x, double wall_h, double tex_x_rel);
+//void    draw_column(t_contex *contex, int x);
+void    draw_column(t_contex *contex, int x);
+int apply_shade(int color, double shade);
+//t_img *select_texture(t_contex *c, double dirx, double diry);
+void    load_text(t_img text[num_tex], t_contex *context);
+void	free_map(t_map **map);
+void	ft_free_contex(t_contex *context);
+int     close_window(t_contex *contex);
+void	ft_clean(t_contex *contex);
+int	handle_destroy(t_contex *contex);
 #endif
 

@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: yuliano <yuliano@student.42.fr>            +#+  +:+       +#+         #
+#    By: ypacileo <ypacileo@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/03/11 05:32:19 by yuliano           #+#    #+#              #
-#    Updated: 2025/11/08 22:04:19 by yuliano          ###   ########.fr        #
+#    Updated: 2025/11/23 18:49:30 by ypacileo         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -16,11 +16,12 @@ SRC_DIR = ./src
 CFLAGS =  -g -I./libft -I./ -I./mlx 
 LIBS = libft/libft.a ./mlx/libmlx.a -lX11 -lXext -lm
 
-OBJS = $(OBJ_DIR)/util1.o \
-	$(OBJ_DIR)/util2.o \
+OBJS = $(OBJ_DIR)/color.o \
+	$(OBJ_DIR)/util.o \
 	$(OBJ_DIR)/main.o \
 	$(OBJ_DIR)/map_read.o \
-	$(OBJ_DIR)/raycasting.o
+	$(OBJ_DIR)/raycasting.o \
+	$(OBJ_DIR)/clean.o
 all: libs $(NAME)
 	
 # Compila o recompila la libft

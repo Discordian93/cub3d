@@ -1,0 +1,22 @@
+/* XPM */
+static char *north[] = {
+"16 16 2 1",
+"r c #B84E3A",
+"m c #7A2E23",
+"mmmmmmmmmmmmmmmm",
+"mrrrmrrrmrrrmrrr",
+"mrrrmrrrmrrrmrrr",
+"mrrrmrrrmrrrmrrr",
+"mmmmmmmmmmmmmmmm",
+"mrrrmrrrmrrrmrrr",
+"mrrrmrrrmrrrmrrr",
+"mrrrmrrrmrrrmrrr",
+"mmmmmmmmmmmmmmmm",
+"mrrrmrrrmrrrmrrr",
+"mrrrmrrrmrrrmrrr",
+"mrrrmrrrmrrrmrrr",
+"mmmmmmmmmmmmmmmm",
+"mrrrmrrrmrrrmrrr",
+"mrrrmrrrmrrrmrrr",
+"mrrrmrrrmrrrmrrr"
+};
