@@ -6,7 +6,7 @@
 /*   By: ypacileo <ypacileo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/01 00:00:00 by student           #+#    #+#             */
-/*   Updated: 2025/11/29 17:09:06 by ypacileo         ###   ########.fr       */
+/*   Updated: 2025/11/29 18:10:19 by ypacileo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@ int	open_cub_file(const char *filename)
 	size_t	len;
 
 	len = ft_strlen(filename);
-	if (len < 4 || ft_strncmp(filename + len - 4, ".cub", 4) != 0
+	if (len < 5 || ft_strncmp(filename + len - 4, ".cub", 4) != 0
 		|| !ft_strchr(filename, '.')
 		|| ft_strlen(ft_strchr(filename, '.')) != 4)
 	{

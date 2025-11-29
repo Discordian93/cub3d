@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   cub3D.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: student <student@student.42.fr>            +#+  +:+       +#+        */
+/*   By: ypacileo <ypacileo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/01 00:00:00 by student           #+#    #+#             */
-/*   Updated: 2025/01/01 00:00:00 by student          ###   ########.fr       */
+/*   Updated: 2025/11/29 18:07:51 by ypacileo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,7 +40,7 @@
 #  define M_PI 3.14159265358979323846
 # endif
 
-# define FOV_RAD (FOV_DEG * (M_PI / 180.0))
+# define FOV_RAD 1.04719755119659774615
 
 enum e_face
 {
